@@ -10,6 +10,7 @@ const Card = ({
   scale = 1,
   opacity = 1,
   cardData = {},
+  onCardClick = () => {},
   graspStart = () => {},
 }) => {
   return (
@@ -28,6 +29,10 @@ const Card = ({
             : "all .15s cubic-bezier(0.4, 0, 0.2, 1)",
         opacity: opacity,
       }}
+      onClick={() => {
+        onCardClick(cardData);
+        console.log("boom");
+      }}
       onPointerDown={(ev) => {
         graspStart(ev, cardData);
       }}
@@ -40,7 +45,22 @@ const Card = ({
         }}
       >
         <div className="w-full h-full absolute backface-hidden font-earth text-sm  bg-blue-200">
-          <div className="absolute top-[1px] right-[2px] ">{cardData.loc}</div>
+          <div className="absolute top-[1px] right-[2px] ">
+            {cardData.startingValue}
+          </div>
+          <div className="absolute top-[1px] left-[2px] ">{cardData.suit}</div>
+          {cardData.left &&
+            cardData.left.map((l) => (
+              <div className="absolute bottom-[20px] left-3px">
+                {l.suit} {l.value}{" "}
+              </div>
+            ))}
+          {cardData.right &&
+            cardData.right.map((r) => (
+              <div className="absolute bottom-[40px] right-[3px]">
+                {r.suit} {r.value}{" "}
+              </div>
+            ))}
         </div>
         <div className="w-full h-full absolute backface-hidden rotate-y-180">
           <img
