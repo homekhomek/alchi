@@ -21,7 +21,7 @@ const Card = ({
         top: `${top}px`,
         left: `${left}px`,
         zIndex: z,
-        transform: `rotate(${rotate}deg) scale(${scale})`,
+        transform: `rotate(${rotate}deg) scale(${scale + 0.2})`,
         opacity: opacity,
       }}
       onClick={() => {
@@ -29,14 +29,21 @@ const Card = ({
       }}
     >
       <div
-        className="relative w-full h-full transform-3d"
+        className="relative w-full h-full transform-3d  border-[#2e222f] border-solid border-2"
         style={{
           transform: flipped ? "rotateY(180deg)" : "",
           transition: "transform .5s cubic-bezier(.47,1.64,.41,.8)",
         }}
       >
-        <div className="w-full h-full absolute backface-hidden bg-red-200 rounded-md"></div>
-        <div className="w-full h-full absolute backface-hidden rotate-y-180 bg-blue-200 rounded-md"></div>
+        <div className="w-full h-full absolute backface-hidden font-earth text-sm">
+          <div className="absolute top-[1px] right-[2px] ">22</div>
+        </div>
+        <div className="w-full h-full absolute backface-hidden rotate-y-180">
+          <img
+            src="/cards/suits/card_back.png"
+            className="w-full h-full "
+          ></img>
+        </div>
       </div>
     </div>
   );

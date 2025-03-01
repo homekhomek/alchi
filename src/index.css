@@ -2,14 +2,14 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'byte';
-  src: url('assets/fonts/ByteBounce.ttf') format('truetype');
+  font-family: 'earth';
+  src: url('assets/fonts/earth.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @theme {
-  --font-byte: byte, sans-serif;
+  --font-earth: earth, sans-serif;
 }
 
 @layer components {
@@ -22,9 +22,13 @@
   
   * {
     @apply p-0;
+    
     margin: 0;
     border: 0;
     box-sizing: border-box;
+    image-rendering: pixelated; /* Makes images pixelated */
+    image-rendering: crisp-edges; /* Alternative for some browsers */
+    line-height: .8;
   }
   
   
