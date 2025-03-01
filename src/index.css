@@ -18,10 +18,12 @@
     width: 100%;  
     overflow: hidden;
     background-color: #023;
+    user-select: none;
   }
   
   * {
     @apply p-0;
+    @apply select-none;
     
     margin: 0;
     border: 0;

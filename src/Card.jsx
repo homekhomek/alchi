@@ -9,34 +9,38 @@ const Card = ({
   rotate = 0,
   scale = 1,
   opacity = 1,
+  cardData = {},
+  graspStart = () => {},
 }) => {
-  const [flipped, setFlipped] = useState(flippedToBack);
-
   return (
     <div
-      className={`absolute perspective-normal bg-transparent transition-all shadow`}
+      className={`absolute perspective-normal bg-transparent shadow `}
       style={{
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`,
         top: `${top}px`,
         left: `${left}px`,
         zIndex: z,
-        transform: `rotate(${rotate}deg) scale(${scale + 0.2})`,
+        transform: `rotate(${rotate}deg) scale(${scale})`,
+        transition:
+          cardData.loc == "grasp"
+            ? "transform .5s cubic-bezier(.47,1.64,.41,.8)"
+            : "all .15s cubic-bezier(0.4, 0, 0.2, 1)",
         opacity: opacity,
       }}
-      onClick={() => {
-        setFlipped(!flipped);
+      onPointerDown={(ev) => {
+        graspStart(ev, cardData);
       }}
     >
       <div
         className="relative w-full h-full transform-3d  border-[#2e222f] border-solid border-2"
         style={{
-          transform: flipped ? "rotateY(180deg)" : "",
-          transition: "transform .5s cubic-bezier(.47,1.64,.41,.8)",
+          transform: flippedToBack ? "rotateY(180deg)" : "",
+          transition: "transform .8s cubic-bezier(.47,1.64,.41,.8)",
         }}
       >
-        <div className="w-full h-full absolute backface-hidden font-earth text-sm">
-          <div className="absolute top-[1px] right-[2px] ">22</div>
+        <div className="w-full h-full absolute backface-hidden font-earth text-sm  bg-blue-200">
+          <div className="absolute top-[1px] right-[2px] ">{cardData.loc}</div>
         </div>
         <div className="w-full h-full absolute backface-hidden rotate-y-180">
           <img

@@ -28,7 +28,7 @@ const Deck = ({ numberOfCards }) => {
   }, [numberOfCards, currentCards]);
 
   return (
-    <div className="m-5 relative">
+    <div className="absolute">
       {cardStates.map((c, cIndex) => {
         return (
           <Card
