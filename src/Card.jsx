@@ -1,5 +1,10 @@
-import React, { useState } from "react";
-import { CARD_HEIGHT, CARD_WIDTH } from "./const";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  CARD_HEIGHT,
+  CARD_HEIGHT_PADDING,
+  CARD_WIDTH,
+  CARD_WIDTH_PADDING,
+} from "./const";
 
 const Card = ({
   flippedToBack = false,
@@ -10,23 +15,42 @@ const Card = ({
   scale = 1,
   opacity = 1,
   cardData = {},
-  onCardClick = () => {},
   graspStart = () => {},
 }) => {
+  const [shakeRot, setShakeRot] = useState(0);
+
+  useEffect(() => {
+    if (!cardData.shaking) return;
+
+    var shakeInterval = setInterval(() => {
+      setShakeRot(Math.floor(Math.random() * 7) - 3);
+    }, 20);
+
+    return () => {
+      setShakeRot(0);
+      clearInterval(shakeInterval);
+    };
+  }, [cardData.shaking]);
+
+  const transString = useMemo(() => {
+    if (cardData.loc == "play" && cardData.shaking) return "none";
+    else if (cardData.loc == "grasp")
+      return "transform .5s cubic-bezier(.47,1.64,.41,.8)";
+
+    return "all .15s cubic-bezier(0.4, 0, 0.2, 1)";
+  }, [cardData.loc, cardData.shaking]);
+
   return (
     <div
-      className={`absolute perspective-normal bg-transparent shadow `}
+      className={`absolute perspective-normal bg-transparent`}
       style={{
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`,
         top: `${top}px`,
         left: `${left}px`,
         zIndex: z,
-        transform: `rotate(${rotate}deg) scale(${scale})`,
-        transition:
-          cardData.loc == "grasp"
-            ? "transform .5s cubic-bezier(.47,1.64,.41,.8)"
-            : "all .15s cubic-bezier(0.4, 0, 0.2, 1)",
+        transform: `rotate(${rotate + shakeRot}deg) scale(${scale})`,
+        transition: transString,
         opacity: opacity,
       }}
       onClick={() => {
@@ -38,27 +62,70 @@ const Card = ({
       }}
     >
       <div
-        className="relative w-full h-full transform-3d  border-[#2e222f] border-solid border-2"
+        className="relative w-full h-full transform-3d  "
         style={{
           transform: flippedToBack ? "rotateY(180deg)" : "",
           transition: "transform .8s cubic-bezier(.47,1.64,.41,.8)",
         }}
       >
-        <div className="w-full h-full absolute backface-hidden font-earth text-sm  bg-blue-200">
-          <div className="absolute top-[1px] right-[2px] ">
-            {cardData.startingValue}
+        <div className="w-full h-full absolute backface-hidden font-earth text-sm ">
+          <div
+            className="absolute "
+            style={{
+              left: -CARD_WIDTH_PADDING + "px",
+              top: -CARD_HEIGHT_PADDING + "px",
+              width: (CARD_WIDTH / 240) * 260,
+              height: (CARD_HEIGHT / 360) * 380,
+              backgroundImage: `url(/cards/suits/${cardData.suit}_back.svg)`,
+              backgroundSize: "contain",
+            }}
+          ></div>
+          <div className="absolute w-[21px] top-[6px] right-[1px] text-center">
+            {cardData.showValue}
           </div>
           <div className="absolute top-[1px] left-[2px] ">{cardData.suit}</div>
           {cardData.left &&
             cardData.left.map((l) => (
-              <div className="absolute bottom-[20px] left-3px">
-                {l.suit} {l.value}{" "}
+              <div
+                className="absolute "
+                style={{
+                  left: -CARD_WIDTH_PADDING + "px",
+                  top: -CARD_HEIGHT_PADDING + "px",
+                  width: (CARD_WIDTH / 240) * 260,
+                  height: (CARD_HEIGHT / 360) * 380,
+                  backgroundImage: `url(/cards/suits/${l.suit}_left.svg)`,
+                  backgroundSize: "contain",
+                }}
+              ></div>
+            ))}
+          {cardData.middle &&
+            cardData.middle.map((m) => (
+              <div className="absolute bottom-[0] w-full text-center">
+                {m.suit} {m.value}{" "}
               </div>
             ))}
           {cardData.right &&
             cardData.right.map((r) => (
-              <div className="absolute bottom-[40px] right-[3px]">
-                {r.suit} {r.value}{" "}
+              <div
+                className="absolute "
+                style={{
+                  left: -CARD_WIDTH_PADDING + "px",
+                  top: -CARD_HEIGHT_PADDING + "px",
+                  width: (CARD_WIDTH / 240) * 260,
+                  height: (CARD_HEIGHT / 360) * 380,
+                  backgroundImage: `url(/cards/suits/${r.suit}_right.svg)`,
+                  backgroundSize: "contain",
+                }}
+              >
+                <div
+                  className="absolute text-[]"
+                  style={{
+                    top: "77px",
+                    right: "10px",
+                  }}
+                >
+                  {r.value}
+                </div>
               </div>
             ))}
         </div>
