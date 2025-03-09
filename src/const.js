@@ -61,7 +61,9 @@ export var cards = [
     name: "watercan",
     suit: "water",
     startingValue: -20,
+    left: [{ suit: "dark", value: 1 }],
     middle: [{ suit: "grass", value: 1 }],
+    right: [{ suit: "fire", value: 1 }],
   },
   {
     name: "drop",

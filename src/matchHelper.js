@@ -69,7 +69,7 @@ export const getCardRenderInfo = (
     }
 
     return {
-      scale: curCard.scoring ? 1.1 : 1,
+      scale: 1,
       left:
         playIndex * FULL_CARD_WIDTH -
         (totalCards * FULL_CARD_WIDTH) / 2 +

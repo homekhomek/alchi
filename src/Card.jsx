@@ -40,6 +40,10 @@ const Card = ({
     return "all .15s cubic-bezier(0.4, 0, 0.2, 1)";
   }, [cardData.loc, cardData.shaking]);
 
+  const trueScale = useMemo(() => {
+    return scale + (cardData.shrink ? -0.1 : 0) + (cardData.scoring ? 0.1 : 0);
+  }, [cardData.shrink, cardData.scoring, scale]);
+
   return (
     <div
       className={`absolute perspective-normal bg-transparent`}
@@ -49,7 +53,7 @@ const Card = ({
         top: `${top}px`,
         left: `${left}px`,
         zIndex: z,
-        transform: `rotate(${rotate + shakeRot}deg) scale(${scale})`,
+        transform: `rotate(${rotate + shakeRot}deg) scale(${trueScale})`,
         transition: transString,
         opacity: opacity,
       }}
@@ -80,9 +84,20 @@ const Card = ({
               backgroundSize: "contain",
             }}
           ></div>
-          <div className="absolute w-[21px] top-[6px] right-[1px] text-center">
-            {cardData.showValue}
-          </div>
+          {cardData.middle &&
+            cardData.middle.map((m) => (
+              <div
+                className="absolute "
+                style={{
+                  left: -CARD_WIDTH_PADDING + "px",
+                  top: -CARD_HEIGHT_PADDING + "px",
+                  width: (CARD_WIDTH / 240) * 260,
+                  height: (CARD_HEIGHT / 360) * 380,
+                  backgroundImage: `url(/cards/suits/${m.suit}_effect.svg)`,
+                  backgroundSize: "contain",
+                }}
+              ></div>
+            ))}
           {cardData.left &&
             cardData.left.map((l) => (
               <div
@@ -97,12 +112,7 @@ const Card = ({
                 }}
               ></div>
             ))}
-          {cardData.middle &&
-            cardData.middle.map((m) => (
-              <div className="absolute bottom-[0] w-full text-center">
-                {m.suit} {m.value}{" "}
-              </div>
-            ))}
+
           {cardData.right &&
             cardData.right.map((r) => (
               <div
@@ -117,6 +127,21 @@ const Card = ({
                 }}
               ></div>
             ))}
+
+          <div
+            className="absolute "
+            style={{
+              left: -CARD_WIDTH_PADDING + "px",
+              top: -CARD_HEIGHT_PADDING + "px",
+              width: (CARD_WIDTH / 240) * 260,
+              height: (CARD_HEIGHT / 360) * 380,
+              backgroundImage: `url(/cards/suits/${cardData.suit}_front.svg)`,
+              backgroundSize: "contain",
+            }}
+          ></div>
+          <div className="absolute w-[21px] top-[6px] right-[1px] text-center">
+            {cardData.showValue}
+          </div>
         </div>
         <div className="w-full h-full absolute backface-hidden rotate-y-180">
           <img

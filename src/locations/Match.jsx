@@ -165,12 +165,22 @@ const Match = ({ gameState, refreshGameState }) => {
 
     var currentPlay = matchData.play;
 
+    // Shrink all the cards in order
+    for (var i = 0; i < currentPlay.length; i++) {
+      var cardToShrink = currentPlay[i];
+      cardToShrink.shrink = true;
+      refreshMatch();
+      await sleep(50);
+    }
+
+    await sleep(250);
+
     for (var i = 0; i < currentPlay.length; i++) {
       var cardToScore = currentPlay[i];
       var cardToLeft = i == 0 ? null : currentPlay[i - 1];
       var cardToRight = i == 3 ? null : currentPlay[i + 1];
 
-      cardToScore.shaking = true;
+      cardToScore.scoring = true;
       refreshMatch();
       await sleep(250);
 
@@ -181,8 +191,10 @@ const Match = ({ gameState, refreshGameState }) => {
 
           if (cardToLeft.suit == scoreObj.suit) {
             cardToScore.showValue += cardToLeft.showValue;
+            cardToLeft.scoring = true;
             useCardToScore(cardToScore);
             await useCardToScore(cardToLeft);
+            cardToLeft.scoring = false;
           }
         }
       }
@@ -232,6 +244,14 @@ const Match = ({ gameState, refreshGameState }) => {
       cardToScore.scoring = false;
       refreshMatch();
       await sleep(150);
+    }
+
+    // Un shrink
+    for (var i = 0; i < currentPlay.length; i++) {
+      var cardToShrink = currentPlay[i];
+      cardToShrink.shrink = false;
+      refreshMatch();
+      await sleep(100);
     }
 
     // Discard play cards
