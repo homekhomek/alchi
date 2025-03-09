@@ -57,10 +57,6 @@ const Card = ({
         transition: transString,
         opacity: opacity,
       }}
-      onClick={() => {
-        onCardClick(cardData);
-        console.log("boom");
-      }}
       onPointerDown={(ev) => {
         graspStart(ev, cardData);
       }}
@@ -85,19 +81,58 @@ const Card = ({
             }}
           ></div>
           {cardData.middle &&
-            cardData.middle.map((m) => (
-              <div
-                className="absolute "
-                style={{
-                  left: -CARD_WIDTH_PADDING + "px",
-                  top: -CARD_HEIGHT_PADDING + "px",
-                  width: (CARD_WIDTH / 240) * 260,
-                  height: (CARD_HEIGHT / 360) * 380,
-                  backgroundImage: `url(/cards/suits/${m.suit}_effect.svg)`,
-                  backgroundSize: "contain",
-                }}
-              ></div>
-            ))}
+            cardData.middle.map((m) => {
+              var desc = [];
+
+              if (m.effect) {
+                if (m.effect.conditional) {
+                  desc.push({ type: "symbol", value: m.effect.conditional });
+                  desc.push({ type: "symbol", value: "arrow" });
+                }
+                if (m.effect.type == "add_points") {
+                  desc.push({
+                    type: "text",
+                    value:
+                      m.effect.value >= 0
+                        ? "+" + m.effect.value
+                        : m.effect.value,
+                  });
+                }
+              }
+              return (
+                <div
+                  className="absolute "
+                  style={{
+                    left: -CARD_WIDTH_PADDING + "px",
+                    top: -CARD_HEIGHT_PADDING + "px",
+                    width: (CARD_WIDTH / 240) * 260,
+                    height: (CARD_HEIGHT / 360) * 380,
+                    backgroundImage: `url(/cards/suits/${
+                      m.suit ? m.suit : "neutral"
+                    }_effect.svg)`,
+                    backgroundSize: "contain",
+                  }}
+                >
+                  <div className="w-full absolute bottom-0 h-[25px] text-center pt-[3px]">
+                    {desc.map((d) => {
+                      if (d.type == "symbol") {
+                        return (
+                          <img
+                            src={`/cards/suits/symbols/${d.value}.svg`}
+                            className="inline-block mt-[-2px]"
+                            style={{
+                              height: (CARD_HEIGHT / 360) * 45 + "px",
+                            }}
+                          ></img>
+                        );
+                      } else {
+                        return d.value;
+                      }
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           {cardData.left &&
             cardData.left.map((l) => (
               <div

@@ -36,21 +36,25 @@ export var cards = [
   {
     name: "seed",
     suit: "grass",
-    startingValue: 2,
-    left: [{ suit: "electric", value: -1 }],
+    startingValue: 1,
+    middle: [
+      {
+        effect: { conditional: "first_card", type: "add_points", value: 2 },
+      },
+    ],
+    right: [{ suit: "water" }],
   },
   {
     name: "leaf",
     suit: "grass",
-    startingValue: -30,
-    left: [{ suit: "water", value: -1 }],
-    right: [{ suit: "water", value: -1 }],
+    startingValue: 1,
   },
   {
     name: "firefly",
     suit: "fire",
-    startingValue: 40,
-    right: [{ suit: "electric", value: 1 }],
+    startingValue: 1,
+    right: [{ suit: "electric" }],
+    left: [{ suit: "grass" }],
   },
   {
     name: "ember",
@@ -60,10 +64,8 @@ export var cards = [
   {
     name: "watercan",
     suit: "water",
-    startingValue: -20,
-    left: [{ suit: "dark", value: 1 }],
-    middle: [{ suit: "grass", value: 1 }],
-    right: [{ suit: "fire", value: 1 }],
+    startingValue: 1,
+    middle: [{ suit: "grass", effect: { type: "add_points", value: 1 } }],
   },
   {
     name: "drop",
@@ -73,8 +75,8 @@ export var cards = [
   {
     name: "lantern",
     suit: "electric",
-    startingValue: -29,
-    left: [{ suit: "fire", value: 1 }],
+    startingValue: 1,
+    left: [{ suit: "fire" }],
   },
   {
     name: "zap",
@@ -84,13 +86,12 @@ export var cards = [
   {
     name: "skull",
     suit: "dark",
-    startingValue: -20,
-    middle: [{ name: "pair", value: 1 }],
+    startingValue: -1,
   },
   {
     name: "oil",
     suit: "dark",
     startingValue: -1,
-    middle: [{ suit: "water", value: -1 }],
+    middle: [{ suit: "water", effect: { type: "add_points", value: -1 } }],
   },
 ];

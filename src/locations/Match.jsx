@@ -36,6 +36,22 @@ const Match = ({ gameState, refreshGameState }) => {
 
   const [hitMarkers, setHitMarkers] = useState([]);
 
+  const addHitMarker = (left, top, msg = "", dir = "up") => {
+    hitMarkers.push({
+      left: left,
+      top: top,
+      msg: msg,
+      dir: dir,
+      start: Date.now(),
+    });
+
+    var newhitMarkers = hitMarkers.filter((hm) => {
+      return Date.now() - hm.start < 1000;
+    });
+
+    setHitMarkers([...newhitMarkers]);
+  };
+
   const canScore = useMemo(
     () => matchData.state == "play" && matchData.play.length >= 4,
     [matchData]
@@ -71,7 +87,7 @@ const Match = ({ gameState, refreshGameState }) => {
   }, [graspID, graspPos, possibleDropPoints]);
 
   const graspStart = (ev, card) => {
-    if (graspID != null) return;
+    if (graspID != null || matchData.state != "play") return;
 
     if (card.loc == "hand") {
       card.loc = "grasp";
@@ -149,12 +165,49 @@ const Match = ({ gameState, refreshGameState }) => {
     setMatchData({ ...matchData });
   };
 
-  const useCardToScore = async (c) => {
-    c.shaking = true;
+  const adjustScore = async (value, cardToScore, cardTransform) => {
+    cardToScore.shaking = true;
     refreshMatch();
-    await sleep(120);
-    c.shaking = false;
+    if (value >= 0) {
+      for (var k = 0; k < value; k++) {
+        setTimeout(() => {
+          addHitMarker(
+            cardTransform.left +
+              Math.floor(Math.random() * CARD_WIDTH * 0.5) +
+              CARD_WIDTH * 0.25,
+            cardTransform.top,
+            "+1"
+          );
+          cardToScore.showValue += 1;
+          refreshMatch();
+        }, 50 * k);
+      }
+      await sleep(50 * (value + 2));
+    } else {
+      for (var k = 0; k < value * -1; k++) {
+        setTimeout(() => {
+          addHitMarker(
+            cardTransform.left +
+              Math.floor(Math.random() * CARD_WIDTH * 0.5) +
+              CARD_WIDTH * 0.25,
+            cardTransform.top,
+            "-1"
+          );
+          cardToScore.showValue -= 1;
+          refreshMatch();
+        }, 50 * k);
+      }
+      await sleep(50 * (value * -1 + 2));
+    }
+
+    cardToScore.shaking = false;
     refreshMatch();
+  };
+
+  const conditionalMet = (conditional, curCard) => {
+    if (conditional == "first_card" && matchData.play.indexOf(curCard) == 0) {
+      return true;
+    }
   };
 
   const score = async () => {
@@ -170,13 +223,19 @@ const Match = ({ gameState, refreshGameState }) => {
       var cardToShrink = currentPlay[i];
       cardToShrink.shrink = true;
       refreshMatch();
-      await sleep(50);
+      await sleep(25);
     }
 
     await sleep(250);
 
     for (var i = 0; i < currentPlay.length; i++) {
       var cardToScore = currentPlay[i];
+      var cardTransform = getCardRenderInfo(
+        cardToScore,
+        matchData,
+        closestGraspSpot,
+        graspPos
+      );
       var cardToLeft = i == 0 ? null : currentPlay[i - 1];
       var cardToRight = i == 3 ? null : currentPlay[i + 1];
 
@@ -190,11 +249,14 @@ const Match = ({ gameState, refreshGameState }) => {
           var scoreObj = cardToScore.left[j];
 
           if (cardToLeft.suit == scoreObj.suit) {
-            cardToScore.showValue += cardToLeft.showValue;
             cardToLeft.scoring = true;
-            useCardToScore(cardToScore);
-            await useCardToScore(cardToLeft);
+            refreshMatch();
+            await sleep(250);
+
+            await adjustScore(cardToLeft.showValue, cardToScore, cardTransform);
+
             cardToLeft.scoring = false;
+            refreshMatch();
           }
         }
       }
@@ -203,42 +265,66 @@ const Match = ({ gameState, refreshGameState }) => {
       if (cardToScore.middle) {
         for (var j = 0; j < cardToScore.middle.length; j++) {
           var scoreObj = cardToScore.middle[j];
+          var usingCard = null;
 
+          // Check for card suit needed
           if (scoreObj.suit) {
-            currentPlay.forEach((c) => {
-              if (c != cardToScore && scoreObj.suit == c.suit) {
-                cardToScore.showValue += scoreObj.value;
-                useCardToScore(cardToScore);
-                useCardToScore(c);
-              }
-            });
-          } else if (scoreObj.name) {
-            if (scoreObj.name == "pair") {
-              for (var k = 0; k < currentPlay.length - 1; k++) {
-                if (currentPlay[k].suit == currentPlay[k + 1].suit) {
-                  cardToScore.showValue += scoreObj.value;
-                  useCardToScore(currentPlay[k]);
-                  await useCardToScore(currentPlay[k + 1]);
-                }
+            for (var k = 0; k < currentPlay.length; k++) {
+              if (currentPlay[k].suit == scoreObj.suit) {
+                usingCard = currentPlay[k];
+                usingCard.scoring = true;
+                refreshMatch();
+                break;
               }
             }
+          }
+
+          // Do action, gotta check for conditional though
+          if (!scoreObj.suit || (scoreObj.suit && usingCard)) {
+            await sleep(250);
+            if (
+              !scoreObj.effect.conditional ||
+              conditionalMet(scoreObj.effect.conditional, cardToScore)
+            ) {
+              if (scoreObj.effect.type == "add_points") {
+                await adjustScore(
+                  scoreObj.effect.value,
+                  cardToScore,
+                  cardTransform
+                );
+              }
+            }
+          }
+
+          if (usingCard) {
+            usingCard.scoring = false;
+            refreshMatch();
           }
         }
       }
 
-      // Check right
-
+      // Check right cards
       if (cardToScore.right && cardToRight) {
         for (var j = 0; j < cardToScore.right.length; j++) {
           var scoreObj = cardToScore.right[j];
 
           if (cardToRight.suit == scoreObj.suit) {
-            cardToScore.showValue += scoreObj.value;
-            useCardToScore(cardToScore);
-            await useCardToScore(cardToRight);
+            cardToRight.scoring = true;
+            refreshMatch();
+            await sleep(250);
+
+            await adjustScore(
+              cardToRight.showValue,
+              cardToScore,
+              cardTransform
+            );
+
+            cardToRight.scoring = false;
+            refreshMatch();
           }
         }
       }
+
       await sleep(150);
       matchData.scoreToBeat -= cardToScore.showValue;
       cardToScore.scoring = false;
@@ -291,8 +377,6 @@ const Match = ({ gameState, refreshGameState }) => {
       c.showValue = c.startingValue;
     });
 
-    console.log(matchData.cards);
-
     matchData.deck = [...matchData.cards];
   };
 
@@ -338,8 +422,6 @@ const Match = ({ gameState, refreshGameState }) => {
 
     matchData.state = "play";
     refreshMatch();
-
-    console.log(matchData);
   };
 
   useEffect(() => {
@@ -377,10 +459,11 @@ const Match = ({ gameState, refreshGameState }) => {
         className="absolute text-center cursor-pointer"
         style={{
           left: innerWidth / 2 - 250,
-          width: 500,
+          width: 200 + "px",
           top: INNER_HEIGHT - 550,
-          height: 50,
-          backgroundColor: canScore ? "#00f" : "#333",
+          height: 80 + "px",
+          backgroundImage: `url(/ui/play_ready.svg)`,
+          backgroundSize: "contain",
         }}
         onClick={canScore ? score : () => {}}
       >
@@ -420,6 +503,21 @@ const Match = ({ gameState, refreshGameState }) => {
           ></Card>
         );
       })}
+
+      {hitMarkers.map((m, mIndex) => (
+        <div
+          key={m.start}
+          className="float-up absolute select-none text-2xl text-center"
+          style={{
+            top: m.top + "px",
+            left: m.left - 10 + "px",
+            width: "20px",
+            z: 1000,
+          }}
+        >
+          {m.msg}
+        </div>
+      ))}
     </div>
   );
 };
