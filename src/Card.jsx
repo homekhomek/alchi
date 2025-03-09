@@ -83,14 +83,13 @@ const Card = ({
           <div className="absolute w-[21px] top-[6px] right-[1px] text-center">
             {cardData.showValue}
           </div>
-          <div className="absolute top-[1px] left-[2px] ">{cardData.suit}</div>
           {cardData.left &&
             cardData.left.map((l) => (
               <div
                 className="absolute "
                 style={{
                   left: -CARD_WIDTH_PADDING + "px",
-                  top: -CARD_HEIGHT_PADDING + "px",
+                  top: -CARD_HEIGHT_PADDING - 10 + "px",
                   width: (CARD_WIDTH / 240) * 260,
                   height: (CARD_HEIGHT / 360) * 380,
                   backgroundImage: `url(/cards/suits/${l.suit}_left.svg)`,
@@ -110,23 +109,13 @@ const Card = ({
                 className="absolute "
                 style={{
                   left: -CARD_WIDTH_PADDING + "px",
-                  top: -CARD_HEIGHT_PADDING + "px",
+                  top: -CARD_HEIGHT_PADDING - 10 + "px",
                   width: (CARD_WIDTH / 240) * 260,
                   height: (CARD_HEIGHT / 360) * 380,
                   backgroundImage: `url(/cards/suits/${r.suit}_right.svg)`,
                   backgroundSize: "contain",
                 }}
-              >
-                <div
-                  className="absolute text-[]"
-                  style={{
-                    top: "77px",
-                    right: "10px",
-                  }}
-                >
-                  {r.value}
-                </div>
-              </div>
+              ></div>
             ))}
         </div>
         <div className="w-full h-full absolute backface-hidden rotate-y-180">

@@ -7,6 +7,13 @@ export const CARD_HEIGHT_PADDING = (CARD_HEIGHT / 360) * 10;
 export const FULL_CARD_WIDTH = CARD_WIDTH_PADDING * 2 + CARD_WIDTH;
 export const FULL_CARD_HEIGHT = CARD_HEIGHT_PADDING * 2 + CARD_HEIGHT;
 
+export const INNER_WIDTH = window.innerWidth;
+export const INNER_HEIGHT = window.innerHeight;
+export const HAND_WIDTH = Math.min(INNER_WIDTH, 500);
+
+export const HAND_OFFSET = -280;
+export const PLAY_OFFSET = -450;
+
 export var suits = [
   {
     name: "grass",

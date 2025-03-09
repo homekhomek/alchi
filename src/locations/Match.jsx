@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { distSquared, shuffleArray, sleep } from "../helper";
-import { CARD_HEIGHT, CARD_WIDTH, cards, FULL_CARD_WIDTH } from "../const";
+import {
+  CARD_HEIGHT,
+  CARD_WIDTH,
+  cards,
+  FULL_CARD_WIDTH,
+  HAND_OFFSET,
+  INNER_HEIGHT,
+  INNER_WIDTH,
+  PLAY_OFFSET,
+} from "../const";
 import Card from "../Card";
 import Deck from "../Deck";
+import { getCardRenderInfo } from "../matchHelper";
 
-const handOffset = -280;
-const playOffset = -450;
 const playWidth = CARD_WIDTH * 4;
-
 const Match = ({ gameState, refreshGameState }) => {
   const [matchData, setMatchData] = useState({
     matchState: "start",
@@ -27,9 +34,8 @@ const Match = ({ gameState, refreshGameState }) => {
     play: [],
   });
 
-  const innerWidth = useMemo(() => window.innerWidth, [window.innerWidth]);
-  const innerHeight = useMemo(() => window.innerHeight, [window.innerHeight]);
-  const handWidth = useMemo(() => Math.min(innerWidth, 500), [innerWidth]);
+  const [hitMarkers, setHitMarkers] = useState([]);
+
   const canScore = useMemo(
     () => matchData.state == "play" && matchData.play.length >= 4,
     [matchData]
@@ -84,11 +90,11 @@ const Match = ({ gameState, refreshGameState }) => {
 
     var possiblePoints = [];
 
-    var cardSeperation = handWidth / (matchData.hand.length + 2);
+    var cardSeperation = INNER_WIDTH / (matchData.hand.length + 2);
     for (var i = 0; i < matchData.hand.length + 1; i++) {
       possiblePoints.push({
-        x: innerWidth / 2 - handWidth / 2 + (i + 1) * cardSeperation,
-        y: innerHeight + handOffset,
+        x: INNER_WIDTH / 2 - INNER_WIDTH / 2 + (i + 1) * cardSeperation,
+        y: INNER_HEIGHT + HAND_OFFSET,
         loc: "hand",
         ind: i,
       });
@@ -103,7 +109,7 @@ const Match = ({ gameState, refreshGameState }) => {
             playCardSeperation / 2 -
             playWidth / 2 +
             innerWidth / 2,
-          y: innerHeight + playOffset,
+          y: INNER_HEIGHT + PLAY_OFFSET,
           loc: "play",
           ind: i,
         });
@@ -164,7 +170,7 @@ const Match = ({ gameState, refreshGameState }) => {
       var cardToLeft = i == 0 ? null : currentPlay[i - 1];
       var cardToRight = i == 3 ? null : currentPlay[i + 1];
 
-      cardToScore.scoring = true;
+      cardToScore.shaking = true;
       refreshMatch();
       await sleep(250);
 
@@ -174,7 +180,7 @@ const Match = ({ gameState, refreshGameState }) => {
           var scoreObj = cardToScore.left[j];
 
           if (cardToLeft.suit == scoreObj.suit) {
-            cardToScore.showValue += scoreObj.value;
+            cardToScore.showValue += cardToLeft.showValue;
             useCardToScore(cardToScore);
             await useCardToScore(cardToLeft);
           }
@@ -252,6 +258,7 @@ const Match = ({ gameState, refreshGameState }) => {
 
     refreshMatch();
   };
+
   const bakeCards = () => {
     matchData.cards = matchData.cards.map((cName) => {
       return JSON.parse(JSON.stringify(cards.find((c) => c.name == cName)));
@@ -329,88 +336,6 @@ const Match = ({ gameState, refreshGameState }) => {
     return curCard.loc == "deck" ? true : false;
   };
 
-  const getCardTransform = (curCard) => {
-    if (curCard.loc == "deck") {
-      var deckIndex = matchData.deck.indexOf(curCard);
-      return {
-        scale: 0.8,
-        top: innerHeight - CARD_HEIGHT - deckIndex * 2,
-        left:
-          matchData.discard.length > 0
-            ? innerWidth / 2 - CARD_WIDTH * 1.5
-            : innerWidth / 2 - CARD_WIDTH / 2,
-        rotate: 0,
-        z: deckIndex,
-      };
-    } else if (curCard.loc == "discard") {
-      var discardIndex = matchData.discard.indexOf(curCard);
-      return {
-        scale: 0.8,
-        top: innerHeight - CARD_HEIGHT - discardIndex * 2,
-        left: innerWidth / 2 + CARD_WIDTH * 0.5,
-        rotate: 0,
-        z: discardIndex + 30,
-      };
-    } else if (curCard.loc == "hand") {
-      var handIndex = matchData.hand.indexOf(curCard);
-      var totalCards = matchData.hand.length;
-      if (closestGraspSpot != null && closestGraspSpot.loc == "hand") {
-        if (closestGraspSpot.ind <= handIndex) handIndex += 1;
-        totalCards += 1;
-      }
-      var offsetIndex = handIndex + 0.5 - totalCards / 2;
-      var yOffset = Math.sin(0.6 * offsetIndex + Math.PI / 2) * 8;
-
-      var cardSeperation = handWidth / (totalCards + 1);
-
-      return {
-        scale: 1,
-        left:
-          (handIndex + 1) * cardSeperation -
-          CARD_WIDTH / 2 -
-          handWidth / 2 +
-          offsetIndex * 4 +
-          innerWidth / 2,
-        top: innerHeight + handOffset - yOffset,
-        rotate: offsetIndex * 2,
-        z: -handIndex + 10,
-      };
-    } else if (curCard.loc == "play") {
-      var playIndex = matchData.play.indexOf(curCard);
-      var totalCards = matchData.play.length;
-      if (closestGraspSpot != null && closestGraspSpot.loc == "play") {
-        if (closestGraspSpot.ind <= playIndex) playIndex += 1;
-        totalCards += 1;
-      }
-
-      return {
-        scale: curCard.scoring ? 0.9 : 1,
-        left:
-          playIndex * FULL_CARD_WIDTH -
-          (totalCards * FULL_CARD_WIDTH) / 2 +
-          innerWidth / 2,
-        top: innerHeight + playOffset,
-        rotate: 0,
-        z: playIndex + 10,
-      };
-    } else if (curCard.loc == "grasp") {
-      return {
-        scale: 1.2,
-        left: graspPos.x - CARD_WIDTH / 2,
-        top: graspPos.y - CARD_HEIGHT * 1.2,
-        rotate: 0,
-        z: 20,
-      };
-    }
-    return {
-      scale: 1,
-      top: innerHeight - CARD_HEIGHT,
-      left: innerWidth / 2 - CARD_WIDTH / 2,
-      rotate: 0,
-      z: 1,
-    };
-  };
-
   return (
     <div
       className="w-full h-full"
@@ -422,7 +347,7 @@ const Match = ({ gameState, refreshGameState }) => {
         style={{
           left: innerWidth / 2 - 250,
           width: 500,
-          top: innerHeight - 650,
+          top: INNER_HEIGHT - 650,
           height: 50,
         }}
       >
@@ -433,7 +358,7 @@ const Match = ({ gameState, refreshGameState }) => {
         style={{
           left: innerWidth / 2 - 250,
           width: 500,
-          top: innerHeight - 550,
+          top: INNER_HEIGHT - 550,
           height: 50,
           backgroundColor: canScore ? "#00f" : "#333",
         }}
@@ -447,11 +372,16 @@ const Match = ({ gameState, refreshGameState }) => {
           width: CARD_WIDTH * 4,
           left: innerWidth / 2 - CARD_WIDTH * 2,
           height: CARD_HEIGHT,
-          top: innerHeight + playOffset,
+          top: INNER_HEIGHT + PLAY_OFFSET,
         }}
       ></div>
       {matchData.cards.map((c, cIndex) => {
-        var transformObj = getCardTransform(c);
+        var transformObj = getCardRenderInfo(
+          c,
+          matchData,
+          closestGraspSpot,
+          graspPos
+        );
 
         return (
           <Card
