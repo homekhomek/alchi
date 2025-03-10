@@ -33,6 +33,7 @@
     image-rendering: pixelated; /* Makes images pixelated */
     image-rendering: crisp-edges; /* Alternative for some browsers */
     line-height: .8;
+    user-select: none;
 
     color: #050e1a;
   }

@@ -4,11 +4,13 @@ import {
   CARD_HEIGHT,
   CARD_WIDTH,
   cards,
+  DRAWING_SCALE,
   FULL_CARD_WIDTH,
   HAND_OFFSET,
   INNER_HEIGHT,
   INNER_WIDTH,
   PLAY_OFFSET,
+  suits,
 } from "../const";
 import Card from "../Card";
 import Deck from "../Deck";
@@ -21,9 +23,10 @@ const Match = ({ gameState, refreshGameState }) => {
     cards: JSON.parse(JSON.stringify(gameState.deck)), // Store list of cards, and their {loc} property
 
     scoreInHand: 0,
-    scoreInHandT: 0,
     scoreToBeat: 50,
-    scoreToBeatT: 50,
+
+    playsLeft: gameState.plays,
+    discardsLeft: gameState.discards,
 
     handSize: 5,
 
@@ -53,7 +56,17 @@ const Match = ({ gameState, refreshGameState }) => {
   };
 
   const canScore = useMemo(
-    () => matchData.state == "play" && matchData.play.length >= 4,
+    () =>
+      matchData.state == "play" &&
+      matchData.play.length >= 4 &&
+      matchData.playsLeft >= 1,
+    [matchData]
+  );
+  const canDiscard = useMemo(
+    () =>
+      matchData.state == "play" &&
+      matchData.play.length >= 1 &&
+      matchData.discardsLeft >= 1,
     [matchData]
   );
   const [graspID, setGraspID] = useState(null);
@@ -210,6 +223,8 @@ const Match = ({ gameState, refreshGameState }) => {
     }
   };
 
+  const doEffect = async (scoreObj, cardToScore) => {};
+
   const score = async () => {
     if (matchData.play.length < 4) return;
 
@@ -265,12 +280,14 @@ const Match = ({ gameState, refreshGameState }) => {
       if (cardToScore.middle) {
         for (var j = 0; j < cardToScore.middle.length; j++) {
           var scoreObj = cardToScore.middle[j];
-          var usingCard = null;
 
-          // Check for card suit needed
-          if (scoreObj.suit) {
+          // suit conditionals
+          if (suits.includes(scoreObj.conditional)) {
             for (var k = 0; k < currentPlay.length; k++) {
-              if (currentPlay[k].suit == scoreObj.suit) {
+              if (
+                currentPlay[k].suit == scoreObj.conditional &&
+                currentPlay[k] != cardToScore
+              ) {
                 usingCard = currentPlay[k];
                 usingCard.scoring = true;
                 refreshMatch();
@@ -342,6 +359,40 @@ const Match = ({ gameState, refreshGameState }) => {
 
     // Discard play cards
     for (var i = 0; i < 4; i++) {
+      var c = matchData.play[0];
+      c.loc = "discard";
+      c.showValue = c.startingValue;
+      matchData.discard.push(c);
+      matchData.play = matchData.play.filter((pc) => pc != c);
+      refreshMatch();
+      await sleep(50);
+    }
+
+    // Draw up to hand size;
+    var cardsToDraw = matchData.handSize - matchData.hand.length;
+
+    if (cardsToDraw > 0) {
+      for (var i = 0; i < cardsToDraw; i++) {
+        await drawCard();
+      }
+    }
+
+    matchData.state = "play";
+
+    refreshMatch();
+  };
+
+  const discard = async () => {
+    matchData.state = "discarding";
+    refreshMatch();
+
+    var currentPlay = matchData.play;
+
+    await sleep(250);
+
+    var cardCount = matchData.play.length;
+    // Discard play cards
+    for (var i = 0; i < cardCount; i++) {
       var c = matchData.play[0];
       c.loc = "discard";
       c.showValue = c.startingValue;
@@ -456,18 +507,38 @@ const Match = ({ gameState, refreshGameState }) => {
         {matchData.scoreToBeat}
       </div>
       <div
-        className="absolute text-center cursor-pointer"
+        className="absolute text-center cursor-pointer pt-2 transition-transform"
         style={{
-          left: innerWidth / 2 - 250,
-          width: 200 + "px",
-          top: INNER_HEIGHT - 550,
-          height: 80 + "px",
-          backgroundImage: `url(/ui/play_ready.svg)`,
+          left: innerWidth / 2 - DRAWING_SCALE * 490,
+          width: DRAWING_SCALE * 360 + "px",
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 100 + "px",
+          height: DRAWING_SCALE * 80 + "px",
+          backgroundImage: `url(/ui/discard_${
+            canDiscard ? "ready" : "unready"
+          }.svg)`,
           backgroundSize: "contain",
+          transform: canDiscard ? "" : "scale(.9)",
+        }}
+        onClick={canDiscard ? discard : () => {}}
+      >
+        discard - {matchData.discardsLeft}
+      </div>
+      <div
+        className="absolute text-center cursor-pointer pt-2 transition-transform"
+        style={{
+          left: innerWidth / 2 - DRAWING_SCALE * 110,
+          width: DRAWING_SCALE * 600 + "px",
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 100 + "px",
+          height: DRAWING_SCALE * 80 + "px",
+          backgroundImage: `url(/ui/play_${
+            canScore ? "ready" : "unready"
+          }.svg)`,
+          backgroundSize: "contain",
+          transform: canScore ? "" : "scale(.9)",
         }}
         onClick={canScore ? score : () => {}}
       >
-        Score!
+        play - {matchData.playsLeft}
       </div>
       <div
         className="h-full bg-green-800 absolute"

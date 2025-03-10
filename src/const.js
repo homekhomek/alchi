@@ -1,8 +1,9 @@
 export const CARD_WIDTH = 80;
 export const CARD_HEIGHT = 120;
 
-export const CARD_WIDTH_PADDING = (CARD_WIDTH / 240) * 10;
-export const CARD_HEIGHT_PADDING = (CARD_HEIGHT / 360) * 10;
+export const DRAWING_SCALE = CARD_HEIGHT / 360;
+export const CARD_WIDTH_PADDING = DRAWING_SCALE * 10;
+export const CARD_HEIGHT_PADDING = DRAWING_SCALE * 10;
 
 export const FULL_CARD_WIDTH = CARD_WIDTH_PADDING * 2 + CARD_WIDTH;
 export const FULL_CARD_HEIGHT = CARD_HEIGHT_PADDING * 2 + CARD_HEIGHT;
@@ -11,8 +12,8 @@ export const INNER_WIDTH = window.innerWidth;
 export const INNER_HEIGHT = window.innerHeight;
 export const HAND_WIDTH = Math.min(INNER_WIDTH, 500);
 
-export const HAND_OFFSET = -280;
-export const PLAY_OFFSET = -450;
+export const HAND_OFFSET = -240;
+export const PLAY_OFFSET = -400;
 
 export var suits = [
   {
@@ -39,7 +40,9 @@ export var cards = [
     startingValue: 1,
     middle: [
       {
-        effect: { conditional: "first_card", type: "add_points", value: 2 },
+        conditional: "first_card",
+        type: "add_points",
+        value: 1,
       },
     ],
     right: [{ suit: "water" }],
@@ -65,7 +68,7 @@ export var cards = [
     name: "watercan",
     suit: "water",
     startingValue: 1,
-    middle: [{ suit: "grass", effect: { type: "add_points", value: 1 } }],
+    middle: [{ conditional: "grass", type: "add_points", value: 1 }],
   },
   {
     name: "drop",
@@ -92,6 +95,6 @@ export var cards = [
     name: "oil",
     suit: "dark",
     startingValue: -1,
-    middle: [{ suit: "water", effect: { type: "add_points", value: -1 } }],
+    middle: [{ conditional: "water", type: "add_points", value: -1 }],
   },
 ];

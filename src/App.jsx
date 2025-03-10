@@ -6,6 +6,8 @@ import Game from "./Game";
 var startingGameState = {
   currentLoc: "match",
   matchNo: 0,
+  plays: 4,
+  discards: 2,
   deck: [
     "seed",
     "leaf",
