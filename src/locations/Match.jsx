@@ -29,6 +29,7 @@ const Match = ({ gameState, refreshGameState }) => {
     discardsLeft: gameState.discards,
 
     handSize: 5,
+    counterPosition: null,
 
     deck: [],
     discard: [],
@@ -157,6 +158,7 @@ const Match = ({ gameState, refreshGameState }) => {
   };
 
   const graspDrop = (ev) => {
+    console.log("boom");
     if (ev.pointerId == graspID) {
       setGraspID(null);
       var graspCard = matchData.grasp;
@@ -223,7 +225,12 @@ const Match = ({ gameState, refreshGameState }) => {
     }
   };
 
-  const doEffect = async (scoreObj, cardToScore) => {};
+  // Conditional is met
+  const doEffect = async (scoreObj, cardToScore, cardIndex, cardTransform) => {
+    if (scoreObj.type == "add_points") {
+      await adjustScore(scoreObj.value, cardToScore, cardTransform);
+    }
+  };
 
   const score = async () => {
     if (matchData.play.length < 4) return;
@@ -244,6 +251,8 @@ const Match = ({ gameState, refreshGameState }) => {
     await sleep(250);
 
     for (var i = 0; i < currentPlay.length; i++) {
+      matchData.counterPosition = i;
+      refreshMatch();
       var cardToScore = currentPlay[i];
       var cardTransform = getCardRenderInfo(
         cardToScore,
@@ -276,50 +285,6 @@ const Match = ({ gameState, refreshGameState }) => {
         }
       }
 
-      // Check middle
-      if (cardToScore.middle) {
-        for (var j = 0; j < cardToScore.middle.length; j++) {
-          var scoreObj = cardToScore.middle[j];
-
-          // suit conditionals
-          if (suits.includes(scoreObj.conditional)) {
-            for (var k = 0; k < currentPlay.length; k++) {
-              if (
-                currentPlay[k].suit == scoreObj.conditional &&
-                currentPlay[k] != cardToScore
-              ) {
-                usingCard = currentPlay[k];
-                usingCard.scoring = true;
-                refreshMatch();
-                break;
-              }
-            }
-          }
-
-          // Do action, gotta check for conditional though
-          if (!scoreObj.suit || (scoreObj.suit && usingCard)) {
-            await sleep(250);
-            if (
-              !scoreObj.effect.conditional ||
-              conditionalMet(scoreObj.effect.conditional, cardToScore)
-            ) {
-              if (scoreObj.effect.type == "add_points") {
-                await adjustScore(
-                  scoreObj.effect.value,
-                  cardToScore,
-                  cardTransform
-                );
-              }
-            }
-          }
-
-          if (usingCard) {
-            usingCard.scoring = false;
-            refreshMatch();
-          }
-        }
-      }
-
       // Check right cards
       if (cardToScore.right && cardToRight) {
         for (var j = 0; j < cardToScore.right.length; j++) {
@@ -342,12 +307,55 @@ const Match = ({ gameState, refreshGameState }) => {
         }
       }
 
+      // Check middle
+      if (cardToScore.middle) {
+        for (var j = 0; j < cardToScore.middle.length; j++) {
+          var scoreObj = cardToScore.middle[j];
+
+          // suit conditionals
+          if (suits.some((s) => s.name == scoreObj.conditional)) {
+            for (var k = 0; k < currentPlay.length; k++) {
+              if (
+                currentPlay[k].suit == scoreObj.conditional &&
+                currentPlay[k] != cardToScore
+              ) {
+                if (scoreObj.times == undefined || scoreObj.times > 0) {
+                  var usingCard = currentPlay[k];
+                  usingCard.scoring = true;
+                  refreshMatch();
+                  await sleep(250);
+                  await doEffect(scoreObj, cardToScore, i, cardTransform);
+
+                  if (scoreObj.times != undefined) {
+                    scoreObj.times -= 1;
+                    refreshMatch();
+                  }
+
+                  usingCard.scoring = false;
+                  refreshMatch();
+                }
+              }
+            }
+          }
+
+          // Other conditionals
+          if (scoreObj.conditional == "first_card" && i == 0) {
+            await sleep(250);
+            await doEffect(scoreObj, cardToScore, i, cardTransform);
+          }
+        }
+      }
+
       await sleep(150);
       matchData.scoreToBeat -= cardToScore.showValue;
       cardToScore.scoring = false;
       refreshMatch();
       await sleep(150);
     }
+
+    // Get rid of the counter
+    matchData.counterPosition = null;
+    refreshMatch();
 
     // Un shrink
     for (var i = 0; i < currentPlay.length; i++) {
@@ -494,6 +502,7 @@ const Match = ({ gameState, refreshGameState }) => {
       className="w-full h-full"
       onPointerMove={graspMove}
       onPointerUp={graspDrop}
+      onPointerCancel={graspDrop}
     >
       <div
         className="absolute text-center text-7xl"
@@ -507,6 +516,28 @@ const Match = ({ gameState, refreshGameState }) => {
         {matchData.scoreToBeat}
       </div>
       <div
+        className="absolute"
+        style={{
+          backgroundImage: "url(/ui/counter.svg)",
+          transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
+          opacity: matchData.counterPosition == null ? "0" : "1",
+          left:
+            matchData.counterPosition == null
+              ? INNER_WIDTH / 2 - DRAWING_SCALE * 140
+              : matchData.counterPosition * FULL_CARD_WIDTH -
+                DRAWING_SCALE * 20 -
+                (matchData.play.length * FULL_CARD_WIDTH) / 2 +
+                INNER_WIDTH / 2,
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 20,
+          width: DRAWING_SCALE * 280 + "px",
+          height: DRAWING_SCALE * 400 + "px",
+          backgroundSize: "contain",
+          transform:
+            matchData.counterPosition == null ? "scale(.5)" : "scale(1)",
+          zIndex: 9999,
+        }}
+      ></div>
+      <div
         className="absolute text-center cursor-pointer pt-2 transition-transform"
         style={{
           left: innerWidth / 2 - DRAWING_SCALE * 490,
@@ -516,8 +547,8 @@ const Match = ({ gameState, refreshGameState }) => {
           backgroundImage: `url(/ui/discard_${
             canDiscard ? "ready" : "unready"
           }.svg)`,
-          backgroundSize: "contain",
-          transform: canDiscard ? "" : "scale(.9)",
+          backgroundSize: "cover",
+          transform: canDiscard ? "" : "scale(.95)",
         }}
         onClick={canDiscard ? discard : () => {}}
       >
@@ -534,7 +565,7 @@ const Match = ({ gameState, refreshGameState }) => {
             canScore ? "ready" : "unready"
           }.svg)`,
           backgroundSize: "contain",
-          transform: canScore ? "" : "scale(.9)",
+          transform: canScore ? "scale(1)" : "scale(.95)",
         }}
         onClick={canScore ? score : () => {}}
       >

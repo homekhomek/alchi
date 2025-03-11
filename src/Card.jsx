@@ -4,6 +4,8 @@ import {
   CARD_HEIGHT_PADDING,
   CARD_WIDTH,
   CARD_WIDTH_PADDING,
+  DRAWING_SCALE,
+  suits,
 } from "./const";
 
 const Card = ({
@@ -82,23 +84,20 @@ const Card = ({
           ></div>
           {cardData.middle &&
             cardData.middle.map((m) => {
+              var background = "neutral";
+
+              if (suits.some((s) => s.name == m.conditional)) {
+                background = m.conditional;
+              }
               var desc = [];
 
-              if (m.effect) {
-                if (m.effect.conditional) {
-                  desc.push({ type: "symbol", value: m.effect.conditional });
-                  desc.push({ type: "symbol", value: "arrow" });
-                }
-                if (m.effect.type == "add_points") {
-                  desc.push({
-                    type: "text",
-                    value:
-                      m.effect.value >= 0
-                        ? "+" + m.effect.value
-                        : m.effect.value,
-                  });
-                }
+              if (m.type == "add_points") {
+                desc.push({
+                  type: "text",
+                  value: m.value >= 0 ? "+" + m.value : m.value,
+                });
               }
+
               return (
                 <div
                   className="absolute "
@@ -107,13 +106,22 @@ const Card = ({
                     top: -CARD_HEIGHT_PADDING + "px",
                     width: (CARD_WIDTH / 240) * 260,
                     height: (CARD_HEIGHT / 360) * 380,
-                    backgroundImage: `url(/cards/suits/${
-                      m.suit ? m.suit : "neutral"
-                    }_effect.svg)`,
+                    backgroundImage: `url(/cards/suits/${background}_effect.svg)`,
                     backgroundSize: "contain",
                   }}
                 >
-                  <div className="w-full absolute bottom-0 h-[25px] text-center pt-[3px]">
+                  <div>
+                    <img
+                      src={`/cards/suits/symbols/${m.conditional}.svg`}
+                      className="absolute "
+                      style={{
+                        left: DRAWING_SCALE * 27 + "px",
+                        bottom: DRAWING_SCALE * 27 + "px",
+                        height: (CARD_HEIGHT / 360) * 45 + "px",
+                      }}
+                    ></img>
+                  </div>
+                  <div className="w-full absolute bottom-0 h-[25px] text-center pt-[4px]">
                     {desc.map((d) => {
                       if (d.type == "symbol") {
                         return (
