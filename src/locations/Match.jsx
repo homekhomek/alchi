@@ -13,7 +13,6 @@ import {
   suits,
 } from "../const";
 import Card from "../Card";
-import Deck from "../Deck";
 import { getCardRenderInfo } from "../matchHelper";
 
 const playWidth = CARD_WIDTH * 4;
@@ -251,8 +250,12 @@ const Match = ({ gameState, refreshGameState }) => {
     await sleep(250);
 
     for (var i = 0; i < currentPlay.length; i++) {
+      var pauseForCounter = matchData.counterPosition == null;
+
       matchData.counterPosition = i;
       refreshMatch();
+      await sleep(250);
+
       var cardToScore = currentPlay[i];
       var cardTransform = getCardRenderInfo(
         cardToScore,
@@ -515,6 +518,21 @@ const Match = ({ gameState, refreshGameState }) => {
       >
         {matchData.scoreToBeat}
       </div>
+
+      <div
+        className="absolute"
+        style={{
+          backgroundImage: "url(/enemies/rat_bishop.svg)",
+          transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
+          left: innerWidth / 2 - 160 * DRAWING_SCALE * 1.5,
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 620 + "px",
+          width: DRAWING_SCALE * 320 * 1.5 + "px",
+          height: DRAWING_SCALE * 320 * 1.5 + "px",
+          backgroundSize: "contain",
+          zIndex: 1,
+        }}
+      ></div>
+
       <div
         className="absolute"
         style={{
@@ -523,7 +541,7 @@ const Match = ({ gameState, refreshGameState }) => {
           opacity: matchData.counterPosition == null ? "0" : "1",
           left:
             matchData.counterPosition == null
-              ? INNER_WIDTH / 2 - DRAWING_SCALE * 140
+              ? DRAWING_SCALE * -20 - 2 * FULL_CARD_WIDTH + INNER_WIDTH / 2
               : matchData.counterPosition * FULL_CARD_WIDTH -
                 DRAWING_SCALE * 20 -
                 (matchData.play.length * FULL_CARD_WIDTH) / 2 +
@@ -532,11 +550,10 @@ const Match = ({ gameState, refreshGameState }) => {
           width: DRAWING_SCALE * 280 + "px",
           height: DRAWING_SCALE * 400 + "px",
           backgroundSize: "contain",
-          transform:
-            matchData.counterPosition == null ? "scale(.5)" : "scale(1)",
           zIndex: 9999,
         }}
       ></div>
+
       <div
         className="absolute text-center cursor-pointer pt-2 transition-transform"
         style={{
@@ -548,7 +565,22 @@ const Match = ({ gameState, refreshGameState }) => {
             canDiscard ? "ready" : "unready"
           }.svg)`,
           backgroundSize: "cover",
-          transform: canDiscard ? "" : "scale(.95)",
+        }}
+        onClick={canDiscard ? discard : () => {}}
+      >
+        discard - {matchData.discardsLeft}
+      </div>
+      <div
+        className="absolute text-center cursor-pointer pt-2 transition-transform"
+        style={{
+          left: innerWidth / 2 - DRAWING_SCALE * 490,
+          width: DRAWING_SCALE * 360 + "px",
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 100 + "px",
+          height: DRAWING_SCALE * 80 + "px",
+          backgroundImage: `url(/ui/discard_${
+            canDiscard ? "ready" : "unready"
+          }.svg)`,
+          backgroundSize: "cover",
         }}
         onClick={canDiscard ? discard : () => {}}
       >
@@ -564,12 +596,12 @@ const Match = ({ gameState, refreshGameState }) => {
           backgroundImage: `url(/ui/play_${
             canScore ? "ready" : "unready"
           }.svg)`,
-          backgroundSize: "contain",
+          backgroundSize: 100 + "%",
           transform: canScore ? "scale(1)" : "scale(.95)",
         }}
         onClick={canScore ? score : () => {}}
       >
-        play - {matchData.playsLeft}
+        Play - {matchData.playsLeft}
       </div>
       <div
         className="h-full bg-green-800 absolute"

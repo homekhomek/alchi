@@ -13,7 +13,7 @@ export const INNER_HEIGHT = window.innerHeight;
 export const HAND_WIDTH = Math.min(INNER_WIDTH, 500);
 
 export const HAND_OFFSET = -240;
-export const PLAY_OFFSET = -400;
+export const PLAY_OFFSET = -390;
 
 export var suits = [
   {

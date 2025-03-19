@@ -76,8 +76,8 @@ const Card = ({
             style={{
               left: -CARD_WIDTH_PADDING + "px",
               top: -CARD_HEIGHT_PADDING + "px",
-              width: (CARD_WIDTH / 240) * 260,
-              height: (CARD_HEIGHT / 360) * 380,
+              width: DRAWING_SCALE * 260,
+              height: DRAWING_SCALE * 380,
               backgroundImage: `url(/cards/suits/${cardData.suit}_back.svg)`,
               backgroundSize: "contain",
             }}
@@ -187,10 +187,17 @@ const Card = ({
           </div>
         </div>
         <div className="w-full h-full absolute backface-hidden rotate-y-180">
-          <img
-            src="/cards/suits/card_back.png"
-            className="w-full h-full "
-          ></img>
+          <div
+            className="absolute "
+            style={{
+              left: -CARD_WIDTH_PADDING + "px",
+              top: -CARD_HEIGHT_PADDING + "px",
+              width: (CARD_WIDTH / 240) * 260,
+              height: (CARD_HEIGHT / 360) * 380,
+              backgroundImage: `url(/cards/suits/card_back.svg)`,
+              backgroundSize: "contain",
+            }}
+          ></div>
         </div>
       </div>
     </div>

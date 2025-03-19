@@ -18,7 +18,7 @@ export const getCardRenderInfo = (
   if (curCard.loc == "deck") {
     var deckIndex = matchData.deck.indexOf(curCard);
     return {
-      scale: 0.8,
+      scale: 0.6,
       top: INNER_HEIGHT - CARD_HEIGHT - deckIndex * 2,
       left:
         matchData.discard.length > 0
@@ -30,7 +30,7 @@ export const getCardRenderInfo = (
   } else if (curCard.loc == "discard") {
     var discardIndex = matchData.discard.indexOf(curCard);
     return {
-      scale: 0.8,
+      scale: 0.6,
       top: INNER_HEIGHT - CARD_HEIGHT - discardIndex * 2,
       left: INNER_WIDTH / 2 + CARD_WIDTH * 0.5,
       rotate: 0,
