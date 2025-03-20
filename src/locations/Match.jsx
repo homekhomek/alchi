@@ -14,6 +14,7 @@ import {
 } from "../const";
 import Card from "../Card";
 import { getCardRenderInfo } from "../matchHelper";
+import { scoreCard } from "../scoreHelper";
 
 const playWidth = CARD_WIDTH * 4;
 const Match = ({ gameState, refreshGameState }) => {
@@ -38,6 +39,7 @@ const Match = ({ gameState, refreshGameState }) => {
   });
 
   const [hitMarkers, setHitMarkers] = useState([]);
+  const [enemyShakeRot, setEnemyShakeRot] = useState(0);
 
   const addHitMarker = (left, top, msg = "", dir = "up") => {
     hitMarkers.push({
@@ -84,10 +86,6 @@ const Match = ({ gameState, refreshGameState }) => {
 
     return closestPoint;
   }, [graspID, graspPos, possibleDropPoints]);
-
-  const nextDamage = useMemo(() => {
-    return matchData.play.reduce((prev, c) => prev + c.showValue, 0);
-  }, [matchData]);
 
   const graspStart = (ev, card) => {
     if (graspID != null || matchData.state != "play") return;
@@ -161,7 +159,14 @@ const Match = ({ gameState, refreshGameState }) => {
         matchData.grasp = null;
         refreshMatch();
 
-        scoreCard(closestGraspSpot.ind, matchData);
+        scoreCard(
+          closestGraspSpot.ind,
+          matchData,
+          refreshMatch,
+          graspPos,
+          addHitMarker,
+          drawCard
+        );
       }
       refreshMatch();
     }
@@ -169,290 +174,6 @@ const Match = ({ gameState, refreshGameState }) => {
 
   const refreshMatch = () => {
     setMatchData({ ...matchData });
-  };
-
-  const adjustScore = async (value, cardToScore, cardTransform) => {
-    cardToScore.shaking = true;
-    refreshMatch();
-    if (value >= 0) {
-      for (var k = 0; k < value; k++) {
-        setTimeout(() => {
-          addHitMarker(
-            cardTransform.left +
-              Math.floor(Math.random() * CARD_WIDTH * 0.5) -
-              CARD_WIDTH * 0.25,
-            cardTransform.top,
-            "+1"
-          );
-          cardToScore.showValue += 1;
-          refreshMatch();
-        }, 50 * k);
-      }
-      await sleep(50 * (value + 2));
-    } else {
-      for (var k = 0; k < value * -1; k++) {
-        setTimeout(() => {
-          addHitMarker(
-            cardTransform.left +
-              Math.floor(Math.random() * CARD_WIDTH * 0.5) +
-              CARD_WIDTH * 0.25,
-            cardTransform.top,
-            "-1"
-          );
-          cardToScore.showValue -= 1;
-          refreshMatch();
-        }, 50 * k);
-      }
-      await sleep(50 * (value * -1 + 2));
-    }
-
-    cardToScore.shaking = false;
-    refreshMatch();
-  };
-
-  const conditionalMet = (conditional, curCard) => {
-    if (conditional == "first_card" && matchData.play.indexOf(curCard) == 0) {
-      return true;
-    }
-  };
-
-  // Conditional is met
-  const doEffect = async (scoreObj, cardToScore, cardIndex, cardTransform) => {
-    if (scoreObj.type == "add_points") {
-      await adjustScore(scoreObj.value, cardToScore, cardTransform);
-    }
-  };
-
-  const scoreCard = async (scoreInd, matchData) => {
-    matchData.state = "scoring";
-    refreshMatch();
-
-    var currentPlay = matchData.play;
-
-    // Shrink all the cards in order
-    for (var i = 0; i < currentPlay.length; i++) {
-      var cardToShrink = currentPlay[i];
-      cardToShrink.shrink = true;
-      refreshMatch();
-      await sleep(25);
-    }
-
-    refreshMatch();
-    await sleep(250);
-
-    var cardToScore = currentPlay[scoreInd];
-    var cardTransform = getCardRenderInfo(
-      cardToScore,
-      matchData,
-      closestGraspSpot,
-      graspPos
-    );
-    var cardToLeft =
-      currentPlay[scoreInd - 1] != undefined ? currentPlay[scoreInd - 1] : null;
-    var cardToRight =
-      currentPlay[scoreInd + 1] != undefined ? currentPlay[scoreInd + 1] : null;
-
-    cardToScore.scoring = true;
-    refreshMatch();
-    await sleep(250);
-
-    // Check left cards
-    if (cardToLeft && cardToScore.left) {
-      if (cardToScore.left) {
-        for (var j = 0; j < cardToScore.left.length; j++) {
-          var scoreObj = cardToScore.left[j];
-
-          if (cardToLeft.suit == scoreObj.suit) {
-            cardToLeft.scoring = true;
-            refreshMatch();
-            await sleep(250);
-
-            await adjustScore(cardToLeft.showValue, cardToScore, cardTransform);
-
-            cardToLeft.scoring = false;
-            refreshMatch();
-          }
-        }
-      }
-    }
-
-    // Check right cards
-    if (cardToScore.right && cardToRight) {
-      for (var j = 0; j < cardToScore.right.length; j++) {
-        var scoreObj = cardToScore.right[j];
-
-        if (cardToRight.suit == scoreObj.suit) {
-          cardToRight.scoring = true;
-          refreshMatch();
-          await sleep(250);
-
-          await adjustScore(cardToRight.showValue, cardToScore, cardTransform);
-
-          cardToRight.scoring = false;
-          refreshMatch();
-        }
-      }
-    }
-
-    // Check middle
-    if (cardToScore.middle) {
-      for (var j = 0; j < cardToScore.middle.length; j++) {
-        var scoreObj = cardToScore.middle[j];
-
-        // suit conditionals
-        if (suits.some((s) => s.name == scoreObj.conditional)) {
-          for (var k = 0; k < currentPlay.length; k++) {
-            if (
-              currentPlay[k].suit == scoreObj.conditional &&
-              currentPlay[k] != cardToScore
-            ) {
-              if (scoreObj.times == undefined || scoreObj.times > 0) {
-                var usingCard = currentPlay[k];
-                usingCard.scoring = true;
-                refreshMatch();
-                await sleep(250);
-                await doEffect(scoreObj, cardToScore, scoreInd, cardTransform);
-
-                if (scoreObj.times != undefined) {
-                  scoreObj.times -= 1;
-                  refreshMatch();
-                }
-
-                usingCard.scoring = false;
-                refreshMatch();
-              }
-            }
-          }
-        }
-        console.log(scoreInd);
-        // Other conditionals
-        if (scoreObj.conditional == "first_card" && scoreInd == 0) {
-          await sleep(250);
-          await doEffect(scoreObj, cardToScore, scoreInd, cardTransform);
-        }
-      }
-    }
-
-    await sleep(150);
-    cardToScore.scoring = false;
-
-    // Trigger the card to the left if it has a right score obj
-    if (cardToLeft && cardToLeft.right) {
-      for (var j = 0; j < cardToLeft.right.length; j++) {
-        var scoreObj = cardToLeft.right[j];
-
-        if (cardToScore.suit == scoreObj.suit) {
-          cardToLeft.scoring = true;
-          refreshMatch();
-          await sleep(250);
-
-          await adjustScore(
-            cardToScore.showValue,
-            cardToLeft,
-            getCardRenderInfo(cardToLeft, matchData, closestGraspSpot, graspPos)
-          );
-
-          cardToLeft.scoring = false;
-          refreshMatch();
-        }
-      }
-    }
-
-    // Trigger the card to the right if it has a left score obj
-    if (cardToRight && cardToRight.left) {
-      for (var j = 0; j < cardToRight.left.length; j++) {
-        var scoreObj = cardToRight.left[j];
-
-        if (cardToScore.suit == scoreObj.suit) {
-          cardToRight.scoring = true;
-          refreshMatch();
-          await sleep(250);
-
-          await adjustScore(
-            cardToScore.showValue,
-            cardToRight,
-            getCardRenderInfo(
-              cardToRight,
-              matchData,
-              closestGraspSpot,
-              graspPos
-            )
-          );
-
-          cardToRight.scoring = false;
-          refreshMatch();
-        }
-      }
-    }
-
-    // Un shrink
-    for (var i = 0; i < currentPlay.length; i++) {
-      var cardToShrink = currentPlay[i];
-      cardToShrink.shrink = false;
-      refreshMatch();
-      await sleep(100);
-    }
-
-    if (matchData.play.length >= 4) {
-      // end turn
-      // Discard play cards
-      for (var i = 0; i < 4; i++) {
-        var c = matchData.play[0];
-        c.loc = "discard";
-        c.showValue = c.startingValue;
-        matchData.discard.push(c);
-        matchData.play = matchData.play.filter((pc) => pc != c);
-        refreshMatch();
-        await sleep(50);
-      }
-
-      // Draw up to hand size;
-      var cardsToDraw = matchData.handSize - matchData.hand.length;
-
-      if (cardsToDraw > 0) {
-        for (var i = 0; i < cardsToDraw; i++) {
-          await drawCard();
-        }
-      }
-    }
-
-    matchData.state = "play";
-
-    refreshMatch();
-  };
-
-  const discard = async () => {
-    matchData.state = "discarding";
-    refreshMatch();
-
-    var currentPlay = matchData.play;
-
-    await sleep(250);
-
-    var cardCount = matchData.play.length;
-    // Discard play cards
-    for (var i = 0; i < cardCount; i++) {
-      var c = matchData.play[0];
-      c.loc = "discard";
-      c.showValue = c.startingValue;
-      matchData.discard.push(c);
-      matchData.play = matchData.play.filter((pc) => pc != c);
-      refreshMatch();
-      await sleep(50);
-    }
-
-    // Draw up to hand size;
-    var cardsToDraw = matchData.handSize - matchData.hand.length;
-
-    if (cardsToDraw > 0) {
-      for (var i = 0; i < cardsToDraw; i++) {
-        await drawCard();
-      }
-    }
-
-    matchData.state = "play";
-
-    refreshMatch();
   };
 
   const bakeCards = () => {
@@ -515,11 +236,23 @@ const Match = ({ gameState, refreshGameState }) => {
   };
 
   useEffect(() => {
+    if (matchData.state != "damaging") return;
+
+    var shakeInterval = setInterval(() => {
+      setEnemyShakeRot(Math.floor(Math.random() * 11) - 5);
+    }, 20);
+
+    return () => {
+      setEnemyShakeRot(0);
+      clearInterval(shakeInterval);
+    };
+  }, [matchData.state]);
+
+  useEffect(() => {
     startMatch();
   }, []);
 
   /* RENDER METHODS */
-
   const cardOpacity = (curCard) => {
     return curCard.loc == "deck" ? 1 : 1;
   };
@@ -538,7 +271,8 @@ const Match = ({ gameState, refreshGameState }) => {
       <div
         className="absolute text-center text-3xl"
         style={{
-          left: innerWidth / 2 - 250,
+          transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
+          left: innerWidth / 2 - 250 + (matchData.scoreInHand == 0 ? 0 : -33),
           width: 500,
           top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 680 + "px",
           height: 50,
@@ -552,30 +286,38 @@ const Match = ({ gameState, refreshGameState }) => {
             height: DRAWING_SCALE * 45 + "px",
           }}
         ></img>
-        {nextDamage != 0 && (
-          <>
-            {nextDamage > 0 ? " + " : " - "}
-            {Math.abs(nextDamage)}
-            <img
-              src={`/cards/suits/symbols/sword.svg`}
-              className="inline-block mt-[-2px] ml-[5px]"
-              style={{
-                height: DRAWING_SCALE * 45 + "px",
-              }}
-            ></img>
-          </>
-        )}
+      </div>
+      <div
+        className="absolute text-center text-3xl"
+        style={{
+          transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
+          left: innerWidth / 2 - 250 + (matchData.scoreInHand == 0 ? 0 : 33),
+          opacity: matchData.scoreInHand == 0 ? "0" : "1",
+          width: 500,
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 680 + "px",
+          height: 50,
+        }}
+      >
+        {matchData.scoreInHand > 0 ? "-" : "+"}
+        {Math.abs(matchData.scoreInHand)}
+        <img
+          src={`/cards/suits/symbols/sword.svg`}
+          className="inline-block mt-[-2px] ml-[5px]"
+          style={{
+            height: DRAWING_SCALE * 45 + "px",
+          }}
+        ></img>
       </div>
 
       <div
         className="absolute"
         style={{
           backgroundImage: "url(/enemies/rat_bishop.svg)",
-          transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
-          left: innerWidth / 2 - 160 * DRAWING_SCALE * 1.5,
+          left: INNER_WIDTH / 2 - 160 * DRAWING_SCALE * 1.5,
           top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 620 + "px",
           width: DRAWING_SCALE * 320 * 1.5 + "px",
           height: DRAWING_SCALE * 320 * 1.5 + "px",
+          transform: `rotate(${enemyShakeRot}deg)`,
           backgroundSize: "contain",
           zIndex: 1,
         }}
