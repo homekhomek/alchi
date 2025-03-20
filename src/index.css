@@ -17,7 +17,7 @@
     height: 100svh;
     width: 100%;  
     overflow: hidden;
-    background-color: #023;
+    background-color: transparent;
     user-select: none;
   }
   
@@ -34,7 +34,8 @@
     image-rendering: crisp-edges; /* Alternative for some browsers */
     line-height: .8;
     user-select: none;
-
+    border: 0;
+    outline: none;
     color: #050e1a;
   }
 

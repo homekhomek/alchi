@@ -15,6 +15,7 @@ import {
 import Card from "../Card";
 import { getCardRenderInfo } from "../matchHelper";
 import { scoreCard } from "../scoreHelper";
+import BlackBox from "../components/BlackBox";
 
 const playWidth = CARD_WIDTH * 4;
 const Match = ({ gameState, refreshGameState }) => {
@@ -322,6 +323,8 @@ const Match = ({ gameState, refreshGameState }) => {
           zIndex: 1,
         }}
       ></div>
+
+      <BlackBox width={300} height={300}></BlackBox>
 
       <div
         className="absolute"
