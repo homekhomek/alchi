@@ -243,6 +243,7 @@ export const scoreCard = async (
   }
 
   if (matchData.play.length >= 4) {
+    matchData.playsLeft -= 1;
     await sleep(250);
     // end turn
     // Discard play cards

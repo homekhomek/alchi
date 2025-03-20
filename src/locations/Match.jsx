@@ -345,6 +345,30 @@ const Match = ({ gameState, refreshGameState }) => {
       ></div>
 
       <div
+        className="h-full absolute text-lg "
+        style={{
+          width: CARD_WIDTH * 4,
+          left: innerWidth / 2 - CARD_WIDTH * 2,
+          height: "30px",
+          top: INNER_HEIGHT + PLAY_OFFSET - 30 + "px",
+        }}
+      >
+        PLAYS
+        {Array.from({ length: 8 }, () => 0).map((c, i) => (
+          <img
+            key={i}
+            src={`/cards/suits/symbols/orange_dot.svg`}
+            className="inline-block mt-[-2px] ml-[3px] transition-all"
+            style={{
+              height: DRAWING_SCALE * 45 + "px",
+              transform: i < matchData.playsLeft ? "" : "scale(0)",
+              opacity: i < matchData.playsLeft ? "1" : "0",
+            }}
+          ></img>
+        ))}
+      </div>
+
+      <div
         className="h-full bg-green-800 absolute"
         style={{
           width: CARD_WIDTH * 4,
