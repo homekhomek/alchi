@@ -9,6 +9,7 @@ import {
   HAND_WIDTH,
   INNER_HEIGHT,
   INNER_WIDTH,
+  SHOP_DECK_OFFSET,
 } from "../const";
 import { getClosestDropPoint } from "../graspHelper";
 import { sleep } from "../helper";
@@ -19,7 +20,8 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
   const [pickCardData, setPickCardData] = useState({
     cards: [],
     shop: [],
-    state: "picking",
+    deck: null,
+    state: "starting",
     grasp: null,
   });
 
@@ -43,6 +45,10 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
       card.oldLoc = "shop";
       pickCardData.shop = pickCardData.shop.filter((c) => c != card);
       pickCardData.grasp = card;
+    } else if (card.loc == "deck") {
+      card.loc = "grasp";
+      pickCardData.deck = null;
+      pickCardData.grasp = card;
     }
 
     setGraspID(ev.pointerId);
@@ -50,9 +56,9 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
 
     var possiblePoints = [];
 
-    var cardSeperation = HAND_WIDTH / 4;
+    var cardSeperation = HAND_WIDTH / (pickCardData.shop.length + 2);
 
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < pickCardData.shop.length + 2; i++) {
       possiblePoints.push({
         x:
           (i + 1) * cardSeperation -
@@ -64,6 +70,14 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
         ind: i,
       });
     }
+
+    if (!pickCardData.deck)
+      possiblePoints.push({
+        x: -CARD_WIDTH / 2 + INNER_WIDTH / 2,
+        y: INNER_HEIGHT + SHOP_DECK_OFFSET + 110 * DRAWING_SCALE,
+        loc: "deck",
+        ind: i,
+      });
 
     /*
 
@@ -104,6 +118,10 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
         graspCard.loc = "shop";
         pickCardData.shop.splice(closestGraspSpot.ind, 0, graspCard);
         pickCardData.grasp = null;
+      } else if (closestGraspSpot.loc == "deck") {
+        graspCard.loc = "deck";
+        pickCardData.deck = graspCard;
+        pickCardData.grasp = null;
       }
       refreshPickCard();
     }
@@ -116,25 +134,22 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
     graspPos
   ) => {
     if (curCard.loc == "deck") {
-      var deckIndex = pickCardData.deck.indexOf(curCard);
       return {
-        scale: 0.6,
-        top: INNER_HEIGHT - CARD_HEIGHT - deckIndex * 2,
-        left:
-          pickCardData.discard.length > 0
-            ? INNER_WIDTH / 2 - CARD_WIDTH * 1.5
-            : INNER_WIDTH / 2 - CARD_WIDTH / 2,
+        scale: 1,
+        top: INNER_HEIGHT + SHOP_DECK_OFFSET + 110 * DRAWING_SCALE,
+        left: INNER_WIDTH / 2 - CARD_WIDTH / 2,
         rotate: 0,
-        z: deckIndex,
+        z: 10,
       };
     } else if (curCard.loc == "shop") {
       var shopIndex = pickCardData.shop.indexOf(curCard);
-
+      var totCards = pickCardData.shop.length;
       if (closestGraspSpot != null && closestGraspSpot.loc == "shop") {
         if (closestGraspSpot.ind <= shopIndex) shopIndex += 1;
+        totCards += 1;
       }
 
-      var cardSeperation = HAND_WIDTH / 4;
+      var cardSeperation = HAND_WIDTH / (totCards + 1);
       return {
         scale: 1,
         left:
@@ -183,13 +198,25 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
     pickCardData.shop = [...shopCards];
   };
 
+  const returnCard = async () => {
+    pickCardData.state = "returning";
+    refreshPickCard();
+    pickCardData.shop.push(pickCardData.deck);
+    pickCardData.deck.loc = "shop";
+    pickCardData.deck = null;
+    refreshPickCard();
+    await sleep(500);
+    pickCardData.state = "picking";
+    refreshPickCard();
+  };
+
   const startPickCard = async () => {
     generateCards();
 
     refreshPickCard();
 
     await sleep(500);
-
+    pickCardData.state = "picking";
     refreshPickCard();
   };
 
@@ -213,14 +240,40 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
         className="absolute text-center text-3xl"
         style={{
           transition: BOUNCE_TRANSITION,
+          backgroundImage: "url(/ui/deck_bag.svg)",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          left: INNER_WIDTH / 2 - 210 * DRAWING_SCALE,
+          top: INNER_HEIGHT + SHOP_DECK_OFFSET,
+          width: 420 * DRAWING_SCALE + "px",
+          height: 520 * DRAWING_SCALE + "px",
+          transform:
+            graspID != null &&
+            closestGraspSpot &&
+            closestGraspSpot.loc == "deck" &&
+            pickCardData.deck == null
+              ? "scale(1.2)"
+              : "",
+          zIndex: 1,
+        }}
+      ></div>
+
+      <div
+        className="absolute text-center text-3xl"
+        style={{
+          transition: BOUNCE_TRANSITION,
           backgroundImage: "url(/ui/red_x.svg)",
           backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
           left: INNER_WIDTH / 2 + 80 * DRAWING_SCALE,
+          top: INNER_HEIGHT + SHOP_OFFSET - 110 + "px",
           width: 80 * DRAWING_SCALE + "px",
           height: 80 * DRAWING_SCALE + "px",
-          zIndex: 9999,
+          transform: pickCardData.deck != null ? "" : "scale(0)",
+          opacity: pickCardData.deck != null ? "1" : "0",
+          zIndex: 1,
         }}
+        onClick={returnCard}
       ></div>
 
       <div
@@ -231,9 +284,12 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
           backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
           left: INNER_WIDTH / 2 - 160 * DRAWING_SCALE,
+          top: INNER_HEIGHT + SHOP_OFFSET - 110 + "px",
           width: 200 * DRAWING_SCALE + "px",
           height: 80 * DRAWING_SCALE + "px",
-          zIndex: 9999,
+          transform: pickCardData.deck != null ? "" : "scale(0)",
+          opacity: pickCardData.deck != null ? "1" : "0",
+          zIndex: 1,
         }}
       >
         add
@@ -259,7 +315,9 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
             left={transformObj.left}
             rotate={transformObj.rotate}
             z={transformObj.z}
-            graspStart={c.loc == "shop" ? graspStart : () => {}}
+            graspStart={
+              c.loc == "shop" || c.loc == "deck" ? graspStart : () => {}
+            }
           ></Card>
         );
       })}

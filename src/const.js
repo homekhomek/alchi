@@ -13,8 +13,10 @@ export const INNER_HEIGHT = window.innerHeight;
 export const HAND_WIDTH = Math.min(INNER_WIDTH, 500);
 
 export const HAND_OFFSET = -240;
-export const SHOP_OFFSET = -240;
 export const PLAY_OFFSET = -390;
+
+export const SHOP_OFFSET = -240;
+export const SHOP_DECK_OFFSET = -540;
 
 export const BOUNCE_TRANSITION = "all .25s cubic-bezier(.47,1.64,.41,.8)";
 
