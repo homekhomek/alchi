@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FULL_CARD_HEIGHT, INNER_HEIGHT, suits } from "../const";
 import TextSymbol from "./TextSymbol";
 
-const CardHelp = ({ card, graspPos }) => {
+const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
   const [show, setShow] = useState(false);
   const [cardFocus, setCardFocus] = useState(null);
 
@@ -16,7 +16,7 @@ const CardHelp = ({ card, graspPos }) => {
 
     var showTimeout = setTimeout(() => {
       setShow(true);
-    }, 1500);
+    }, customDelay);
 
     return () => {
       clearTimeout(showTimeout);
@@ -27,7 +27,7 @@ const CardHelp = ({ card, graspPos }) => {
     <div
       className="fixed text-center bg-[#c4bbb3] p-2 text-lg border-2 border-solid border-[#050e1a] rounded-lg"
       style={{
-        transition: "opacity .5s ease, transform .5s ease",
+        transition: "opacity .3s ease, transform .3s ease",
         opacity: show ? "1" : "0",
         left: "50%",
         bottom: graspPos.y
@@ -37,6 +37,7 @@ const CardHelp = ({ card, graspPos }) => {
           ? " translateX(-50%) scale(1) "
           : "translateX(-50%) scale(0.8) ",
         zIndex: 30,
+        pointerEvents: "none",
       }}
     >
       {cardFocus && (

@@ -35,6 +35,7 @@
     border: 0;
     outline: none;
     color: #050e1a;
+    background-repeat: no-repeat;
   }
 
   @keyframes float-up {

@@ -1,5 +1,5 @@
-import { use, useEffect, useMemo, useState } from "react";
-import { distSquared, shuffleArray, sleep } from "../helper";
+import { useEffect, useMemo, useState } from "react";
+import { shuffleArray, sleep } from "../helper";
 import {
   BOUNCE_TRANSITION,
   CARD_HEIGHT,
@@ -8,6 +8,7 @@ import {
   DRAWING_SCALE,
   FULL_CARD_WIDTH,
   HAND_OFFSET,
+  HAND_WIDTH,
   INNER_HEIGHT,
   INNER_WIDTH,
   PLAY_OFFSET,
@@ -16,13 +17,13 @@ import {
 import Card from "../Card";
 import { getCardRenderInfo } from "../matchHelper";
 import { scoreCard } from "../scoreHelper";
-import BlackBox from "../components/BlackBox";
 import CardHelp from "../components/CardHelp";
 import TextSymbol from "../components/TextSymbol";
 import Enemy from "../components/Match/Enemy";
+import { getClosestDropPoint } from "../graspHelper";
 
 const playWidth = CARD_WIDTH * 4;
-const Match = ({ gameState, refreshGameState }) => {
+const Match = ({ gameState, refreshGameState, addHitMarker }) => {
   const [matchData, setMatchData] = useState({
     matchState: "start",
     cards: JSON.parse(JSON.stringify(gameState.deck)), // Store list of cards, and their {loc} property
@@ -44,52 +45,13 @@ const Match = ({ gameState, refreshGameState }) => {
   });
 
   const [animStep, setAnimStep] = useState(0);
-  const [hitMarkers, setHitMarkers] = useState([]);
-
-  const addHitMarker = (left, top, msg = "", dir = "up") => {
-    hitMarkers.push({
-      left: left,
-      top: top,
-      msg: msg,
-      dir: dir,
-      start: Date.now(),
-    });
-
-    var newhitMarkers = hitMarkers.filter((hm) => {
-      return Date.now() - hm.start < 1000;
-    });
-
-    setHitMarkers([...newhitMarkers]);
-  };
 
   const [graspID, setGraspID] = useState(null);
   const [graspPos, setGraspPos] = useState({});
   const [possibleDropPoints, setPossibleDropPoints] = useState([]);
 
   const closestGraspSpot = useMemo(() => {
-    if (graspID == null || !graspID || possibleDropPoints.length <= 0)
-      return null;
-
-    var closestPoint = null;
-    var closestPointDistance = null;
-
-    possibleDropPoints.forEach((p) => {
-      var distanceToPoint = distSquared(
-        p.x,
-        p.y,
-        graspPos.x,
-        graspPos.y - CARD_HEIGHT * 0.5
-      );
-      if (closestPoint == null) {
-        closestPoint = p;
-        closestPointDistance = distanceToPoint;
-      } else if (distanceToPoint < closestPointDistance) {
-        closestPoint = p;
-        closestPointDistance = distanceToPoint;
-      }
-    });
-
-    return closestPoint;
+    return getClosestDropPoint(graspID, graspPos, possibleDropPoints);
   }, [graspID, graspPos, possibleDropPoints]);
 
   const graspStart = (ev, card) => {
@@ -112,10 +74,10 @@ const Match = ({ gameState, refreshGameState }) => {
 
     var possiblePoints = [];
 
-    var cardSeperation = INNER_WIDTH / (matchData.hand.length + 2);
+    var cardSeperation = HAND_WIDTH / (matchData.hand.length + 2);
     for (var i = 0; i < matchData.hand.length + 1; i++) {
       possiblePoints.push({
-        x: INNER_WIDTH / 2 - INNER_WIDTH / 2 + (i + 1) * cardSeperation,
+        x: INNER_WIDTH / 2 - HAND_WIDTH / 2 + (i + 1) * cardSeperation,
         y: INNER_HEIGHT + HAND_OFFSET,
         loc: "hand",
         ind: i,
@@ -315,7 +277,12 @@ const Match = ({ gameState, refreshGameState }) => {
       >
         {matchData.scoreInHand > 0 ? "-" : "+"}
         {Math.abs(matchData.scoreInHand)}
-        <TextSymbol symbol={"sword"}></TextSymbol>
+
+        {matchData.scoreInHand > 0 ? (
+          <TextSymbol symbol={"sword"}></TextSymbol>
+        ) : (
+          <TextSymbol symbol={"heart"}></TextSymbol>
+        )}
       </div>
 
       <Enemy animStep={animStep} matchData={matchData}></Enemy>
@@ -376,21 +343,6 @@ const Match = ({ gameState, refreshGameState }) => {
           ></Card>
         );
       })}
-
-      {hitMarkers.map((m, mIndex) => (
-        <div
-          key={m.start}
-          className="float-up absolute select-none text-2xl text-center"
-          style={{
-            top: m.top + "px",
-            left: m.left - 10 + "px",
-            width: "20px",
-            z: 1000,
-          }}
-        >
-          {m.msg}
-        </div>
-      ))}
 
       <div
         className="absolute text-center text-3xl"

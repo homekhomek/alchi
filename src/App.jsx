@@ -2,7 +2,7 @@ import { useState } from "react";
 import Game from "./Game";
 
 var startingGameState = {
-  currentLoc: "match",
+  currentLoc: "pickcard",
   matchNo: 0,
   plays: 4,
   deck: [
