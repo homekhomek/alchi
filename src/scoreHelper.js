@@ -164,7 +164,7 @@ export const scoreCard = async (
   }
 
   refreshMatch();
-  await sleep(250);
+  await sleep(100);
 
   var cardToScore = currentPlay[scoreInd];
   var cardToLeft =
@@ -216,9 +216,6 @@ export const scoreCard = async (
     cardToRight.scoring = false;
     refreshMatch();
   }
-
-  refreshMatch();
-  await sleep(150);
 
   // Check all the middles
   for (var i = 0; i < currentPlay.length; i++) {

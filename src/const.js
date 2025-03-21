@@ -15,6 +15,8 @@ export const HAND_WIDTH = Math.min(INNER_WIDTH, 500);
 export const HAND_OFFSET = -240;
 export const PLAY_OFFSET = -390;
 
+export const BOUNCE_TRANSITION = "all .25s cubic-bezier(.47,1.64,.41,.8)";
+
 export var suits = [
   {
     name: "grass",

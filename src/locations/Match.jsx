@@ -271,14 +271,14 @@ const Match = ({ gameState, refreshGameState }) => {
       onPointerUp={graspDrop}
       onPointerCancel={graspDrop}
     >
-      <CardHelp card={matchData.grasp} graspPos={graspDrop}></CardHelp>
+      <CardHelp card={matchData.grasp} graspPos={graspPos}></CardHelp>
       <div
         className="absolute text-center text-3xl"
         style={{
           transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
           left: innerWidth / 2 - 250 + (matchData.scoreInHand == 0 ? 0 : -33),
           width: 500,
-          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 680 + "px",
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 630 + "px",
           height: 50,
         }}
       >
@@ -292,7 +292,7 @@ const Match = ({ gameState, refreshGameState }) => {
           left: innerWidth / 2 - 250 + (matchData.scoreInHand == 0 ? 0 : 33),
           opacity: matchData.scoreInHand == 0 ? "0" : "1",
           width: 500,
-          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 680 + "px",
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 630 + "px",
           height: 50,
         }}
       >
@@ -306,33 +306,12 @@ const Match = ({ gameState, refreshGameState }) => {
         style={{
           backgroundImage: "url(/enemies/rat_bishop.svg)",
           left: INNER_WIDTH / 2 - 160 * DRAWING_SCALE * 1.5,
-          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 620 + "px",
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 580 + "px",
           width: DRAWING_SCALE * 320 * 1.5 + "px",
           height: DRAWING_SCALE * 320 * 1.5 + "px",
           transform: `rotate(${enemyShakeRot}deg)`,
           backgroundSize: "contain",
           zIndex: 1,
-        }}
-      ></div>
-
-      <div
-        className="absolute"
-        style={{
-          backgroundImage: "url(/ui/counter.svg)",
-          transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
-          opacity: matchData.counterPosition == null ? "0" : "1",
-          left:
-            matchData.counterPosition == null
-              ? DRAWING_SCALE * -20 - 2 * FULL_CARD_WIDTH + INNER_WIDTH / 2
-              : matchData.counterPosition * FULL_CARD_WIDTH -
-                DRAWING_SCALE * 20 -
-                (matchData.play.length * FULL_CARD_WIDTH) / 2 +
-                INNER_WIDTH / 2,
-          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 15,
-          width: DRAWING_SCALE * 280 + "px",
-          height: DRAWING_SCALE * 400 + "px",
-          backgroundSize: "contain",
-          zIndex: 9999,
         }}
       ></div>
 
