@@ -74,7 +74,7 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
     if (!pickCardData.deck)
       possiblePoints.push({
         x: -CARD_WIDTH / 2 + INNER_WIDTH / 2,
-        y: INNER_HEIGHT + SHOP_DECK_OFFSET + 110 * DRAWING_SCALE,
+        y: INNER_HEIGHT + SHOP_DECK_OFFSET + 110 * DRAWING_SCALE + CARD_HEIGHT,
         loc: "deck",
         ind: i,
       });
