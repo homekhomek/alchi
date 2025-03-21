@@ -16,6 +16,8 @@ import Card from "../Card";
 import { getCardRenderInfo } from "../matchHelper";
 import { scoreCard } from "../scoreHelper";
 import BlackBox from "../components/BlackBox";
+import CardHelp from "../components/CardHelp";
+import TextSymbol from "../components/TextSymbol";
 
 const playWidth = CARD_WIDTH * 4;
 const Match = ({ gameState, refreshGameState }) => {
@@ -269,6 +271,7 @@ const Match = ({ gameState, refreshGameState }) => {
       onPointerUp={graspDrop}
       onPointerCancel={graspDrop}
     >
+      <CardHelp card={matchData.grasp} graspPos={graspDrop}></CardHelp>
       <div
         className="absolute text-center text-3xl"
         style={{
@@ -280,13 +283,7 @@ const Match = ({ gameState, refreshGameState }) => {
         }}
       >
         {matchData.scoreToBeat}
-        <img
-          src={`/cards/suits/symbols/heart.svg`}
-          className="inline-block mt-[-2px] ml-[5px]"
-          style={{
-            height: DRAWING_SCALE * 45 + "px",
-          }}
-        ></img>
+        <TextSymbol symbol={"heart"}></TextSymbol>
       </div>
       <div
         className="absolute text-center text-3xl"
@@ -301,13 +298,7 @@ const Match = ({ gameState, refreshGameState }) => {
       >
         {matchData.scoreInHand > 0 ? "-" : "+"}
         {Math.abs(matchData.scoreInHand)}
-        <img
-          src={`/cards/suits/symbols/sword.svg`}
-          className="inline-block mt-[-2px] ml-[5px]"
-          style={{
-            height: DRAWING_SCALE * 45 + "px",
-          }}
-        ></img>
+        <TextSymbol symbol={"sword"}></TextSymbol>
       </div>
 
       <div
@@ -323,8 +314,6 @@ const Match = ({ gameState, refreshGameState }) => {
           zIndex: 1,
         }}
       ></div>
-
-      <BlackBox width={300} height={300}></BlackBox>
 
       <div
         className="absolute"

@@ -18,18 +18,23 @@ export const PLAY_OFFSET = -390;
 export var suits = [
   {
     name: "grass",
+    primaryColor: "#94bf30",
   },
   {
     name: "fire",
+    primaryColor: "#ff7070",
   },
   {
     name: "water",
+    primaryColor: "#49c2f2",
   },
   {
     name: "electric",
+    primaryColor: "#fad937",
   },
   {
     name: "dark",
+    primaryColor: "#807980",
   },
 ];
 
