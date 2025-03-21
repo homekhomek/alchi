@@ -12,7 +12,6 @@ const CardHelp = ({ card, graspPos }) => {
       return;
     }
 
-    setSuit(suits.find((s) => s.name == card.suit));
     setCardFocus(card);
 
     var showTimeout = setTimeout(() => {

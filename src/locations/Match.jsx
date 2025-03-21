@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { distSquared, shuffleArray, sleep } from "../helper";
 import {
   CARD_HEIGHT,
@@ -18,6 +18,7 @@ import { scoreCard } from "../scoreHelper";
 import BlackBox from "../components/BlackBox";
 import CardHelp from "../components/CardHelp";
 import TextSymbol from "../components/TextSymbol";
+import Enemy from "../components/Match/Enemy";
 
 const playWidth = CARD_WIDTH * 4;
 const Match = ({ gameState, refreshGameState }) => {
@@ -41,8 +42,8 @@ const Match = ({ gameState, refreshGameState }) => {
     play: [],
   });
 
+  const [animStep, setAnimStep] = useState(0);
   const [hitMarkers, setHitMarkers] = useState([]);
-  const [enemyShakeRot, setEnemyShakeRot] = useState(0);
 
   const addHitMarker = (left, top, msg = "", dir = "up") => {
     hitMarkers.push({
@@ -168,12 +169,15 @@ const Match = ({ gameState, refreshGameState }) => {
           refreshMatch,
           graspPos,
           addHitMarker,
-          drawCard
+          drawCard,
+          checkWin
         );
       }
       refreshMatch();
     }
   };
+
+  const checkWin = async () => {};
 
   const refreshMatch = () => {
     setMatchData({ ...matchData });
@@ -239,19 +243,6 @@ const Match = ({ gameState, refreshGameState }) => {
   };
 
   useEffect(() => {
-    if (matchData.state != "damaging") return;
-
-    var shakeInterval = setInterval(() => {
-      setEnemyShakeRot(Math.floor(Math.random() * 11) - 5);
-    }, 20);
-
-    return () => {
-      setEnemyShakeRot(0);
-      clearInterval(shakeInterval);
-    };
-  }, [matchData.state]);
-
-  useEffect(() => {
     startMatch();
   }, []);
 
@@ -301,19 +292,7 @@ const Match = ({ gameState, refreshGameState }) => {
         <TextSymbol symbol={"sword"}></TextSymbol>
       </div>
 
-      <div
-        className="absolute"
-        style={{
-          backgroundImage: "url(/enemies/rat_bishop.svg)",
-          left: INNER_WIDTH / 2 - 160 * DRAWING_SCALE * 1.5,
-          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 580 + "px",
-          width: DRAWING_SCALE * 320 * 1.5 + "px",
-          height: DRAWING_SCALE * 320 * 1.5 + "px",
-          transform: `rotate(${enemyShakeRot}deg)`,
-          backgroundSize: "contain",
-          zIndex: 1,
-        }}
-      ></div>
+      <Enemy animStep={animStep} matchData={matchData}></Enemy>
 
       <div
         className="h-full absolute text-lg "

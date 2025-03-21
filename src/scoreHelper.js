@@ -15,7 +15,8 @@ export const scoreCard = async (
   refreshMatch,
   graspPos,
   addHitMarker,
-  drawCard
+  drawCard,
+  checkWin
 ) => {
   // Conditional is met
   const doEffect = async (scoreObj, cardToScore) => {
@@ -278,6 +279,10 @@ export const scoreCard = async (
     }
     matchData.state = "scoring";
     refreshMatch();
+
+    const gameOver = await checkWin();
+
+    if (gameOver) return;
 
     matchData.scoreInHand = 0;
 
