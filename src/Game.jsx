@@ -1,4 +1,5 @@
 import Match from "./locations/Match";
+import PickCard from "./locations/PickCard";
 
 const Game = ({ gameState, refreshGameState }) => {
   return (
@@ -7,7 +8,7 @@ const Game = ({ gameState, refreshGameState }) => {
         <Match gameState={gameState} refreshGameState={refreshGameState} />
       )}
       {gameState.currentLoc == "pickcard" && (
-        <Match gameState={gameState} refreshGameState={refreshGameState} />
+        <PickCard gameState={gameState} refreshGameState={refreshGameState} />
       )}
     </div>
   );

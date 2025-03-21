@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  BOUNCE_TRANSITION,
   DRAWING_SCALE,
   FULL_CARD_HEIGHT,
   INNER_HEIGHT,
@@ -27,12 +28,16 @@ const Enemy = ({ animStep, matchData }) => {
       className="absolute"
       style={{
         backgroundImage: "url(/enemies/rat_bishop.svg)",
+        transition: BOUNCE_TRANSITION,
         left: INNER_WIDTH / 2 - 160 * DRAWING_SCALE * 1.5,
         top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 580 + "px",
         width: DRAWING_SCALE * 320 * 1.5 + "px",
         height: DRAWING_SCALE * 320 * 1.5 + "px",
-        transform: `rotate(${enemyShakeRot}deg)`,
+        transform: `rotate(${enemyShakeRot}deg) scale(${
+          animStep >= 11 ? ".8" : "1"
+        })`,
         backgroundSize: "contain",
+        opacity: animStep >= 11 ? ".5" : "1",
         zIndex: 1,
       }}
     ></div>

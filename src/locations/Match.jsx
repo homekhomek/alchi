@@ -1,6 +1,7 @@
 import { use, useEffect, useMemo, useState } from "react";
 import { distSquared, shuffleArray, sleep } from "../helper";
 import {
+  BOUNCE_TRANSITION,
   CARD_HEIGHT,
   CARD_WIDTH,
   cards,
@@ -27,7 +28,7 @@ const Match = ({ gameState, refreshGameState }) => {
     cards: JSON.parse(JSON.stringify(gameState.deck)), // Store list of cards, and their {loc} property
 
     scoreInHand: 0,
-    scoreToBeat: 50,
+    scoreToBeat: 5,
 
     playsLeft: gameState.plays,
     discardsLeft: gameState.discards,
@@ -177,7 +178,28 @@ const Match = ({ gameState, refreshGameState }) => {
     }
   };
 
-  const checkWin = async () => {};
+  const checkWin = async () => {
+    if (matchData.scoreToBeat <= 0) {
+      await sleep(1000);
+      // WIN!!
+      matchData.state = "win";
+      setAnimStep(11);
+      await sleep(1000);
+      setAnimStep(12);
+      await sleep(300);
+      setAnimStep(13);
+      await sleep(2000);
+      setAnimStep(14);
+      await sleep(500);
+
+      gameState.currentLoc = "pickcard";
+      refreshGameState();
+
+      return true;
+    }
+
+    return false;
+  };
 
   const refreshMatch = () => {
     setMatchData({ ...matchData });
@@ -258,6 +280,10 @@ const Match = ({ gameState, refreshGameState }) => {
   return (
     <div
       className="w-full h-full"
+      style={{
+        transition: BOUNCE_TRANSITION,
+        opacity: animStep == 14 ? "0" : "1",
+      }}
       onPointerMove={graspMove}
       onPointerUp={graspDrop}
       onPointerCancel={graspDrop}
@@ -365,6 +391,29 @@ const Match = ({ gameState, refreshGameState }) => {
           {m.msg}
         </div>
       ))}
+
+      <div
+        className="absolute text-center text-3xl"
+        style={{
+          transition: BOUNCE_TRANSITION,
+          backgroundImage: "url(/ui/win.svg)",
+          backgroundSize: "contain",
+          left: "50%",
+          top: animStep >= 12 ? "50%" : "-50%",
+          opacity: animStep >= 12 ? "1" : "0",
+          width: 1000 * DRAWING_SCALE + "px",
+          height: 500 * DRAWING_SCALE + "px",
+          transform:
+            animStep >= 13
+              ? "translate(-50%, -50%) scale(1.2)"
+              : "translate(-50%, -50%)",
+          zIndex: 9999,
+        }}
+      >
+        <div className="absolute text-center -translate-1/2 top-2/5 left-1/2 text-5xl">
+          VICTORY!
+        </div>
+      </div>
     </div>
   );
 };

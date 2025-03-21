@@ -54,4 +54,4 @@ const PickCard = ({ gameState, refreshGameState }) => {
   );
 };
 
-export default Match;
+export default PickCard;
