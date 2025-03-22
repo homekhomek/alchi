@@ -13,6 +13,27 @@
 }
 
 @layer components {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+/* Make the draggable part (thumb) black */
+::-webkit-scrollbar-thumb {
+    background-color: #050e1a;
+    border-radius: 10px;
+    margin: 2px; /* Adds padding around the thumb */
+}
+
+/* Remove scrollbar track and border */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
   body, #root {
     height: 100svh;
     width: 100%;  

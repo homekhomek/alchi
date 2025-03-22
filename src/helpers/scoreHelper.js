@@ -5,7 +5,7 @@ import {
   INNER_WIDTH,
   PLAY_OFFSET,
   suits,
-} from "./const";
+} from "../const";
 import { sleep } from "./helper";
 import { getCardRenderInfo } from "./matchHelper";
 

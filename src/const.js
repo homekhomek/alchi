@@ -18,6 +18,9 @@ export const PLAY_OFFSET = -390;
 export const SHOP_OFFSET = -240;
 export const SHOP_DECK_OFFSET = -540;
 
+export const DECK_VIEW_SPACING = 5;
+export const DECK_VIEW_SIDE_SPACING = 50;
+
 export const BOUNCE_TRANSITION = "all .25s cubic-bezier(.47,1.64,.41,.8)";
 
 export var suits = [
@@ -83,7 +86,7 @@ export var cards = [
   {
     name: "drop",
     suit: "water",
-    startingValue: 1,
+    startingValue: 799,
   },
   {
     name: "lantern",
@@ -94,7 +97,7 @@ export var cards = [
   {
     name: "zap",
     suit: "electric",
-    startingValue: 1,
+    startingValue: 799,
   },
   {
     name: "skull",

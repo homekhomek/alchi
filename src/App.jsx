@@ -1,22 +1,24 @@
 import { useState } from "react";
 import Game from "./Game";
 
+var startingDeckCardNames = [
+  "seed",
+  "leaf",
+  "firefly",
+  "ember",
+  "watercan",
+  "drop",
+  "lantern",
+  "zap",
+  "skull",
+  "oil",
+];
+
 var startingGameState = {
-  currentLoc: "pickcard",
+  currentLoc: "starting",
   matchNo: 0,
   plays: 4,
-  deck: [
-    "seed",
-    "leaf",
-    "firefly",
-    "ember",
-    "watercan",
-    "drop",
-    "lantern",
-    "zap",
-    "skull",
-    "oil",
-  ],
+  deck: startingDeckCardNames,
 };
 
 function App() {

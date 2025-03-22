@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Match from "./locations/Match";
 import PickCard from "./locations/PickCard";
+import { bakeCardNameList } from "./helpers/helper";
 
 const Game = ({ gameState, refreshGameState }) => {
   const [hitMarkers, setHitMarkers] = useState([]);
@@ -20,6 +21,17 @@ const Game = ({ gameState, refreshGameState }) => {
 
     setHitMarkers([...newhitMarkers]);
   };
+
+  // NEW GAME START
+  const startGame = async () => {
+    gameState.deck = bakeCardNameList(gameState.deck);
+    gameState.currentLoc = "match";
+    refreshGameState(gameState);
+  };
+
+  useEffect(() => {
+    startGame();
+  }, []);
 
   return (
     <div className="w-full h-full">

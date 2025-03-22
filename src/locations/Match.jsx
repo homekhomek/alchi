@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { shuffleArray, sleep } from "../helper";
+import { shuffleArray, sleep } from "../helpers/helper";
 import {
   BOUNCE_TRANSITION,
   CARD_HEIGHT,
@@ -15,12 +15,13 @@ import {
   suits,
 } from "../const";
 import Card from "../Card";
-import { getCardRenderInfo } from "../matchHelper";
-import { scoreCard } from "../scoreHelper";
+import { getCardRenderInfo } from "../helpers/matchHelper";
+import { scoreCard } from "../helpers/scoreHelper";
 import CardHelp from "../components/CardHelp";
 import TextSymbol from "../components/TextSymbol";
 import Enemy from "../components/Match/Enemy";
-import { getClosestDropPoint } from "../graspHelper";
+import { getClosestDropPoint } from "../helpers/graspHelper";
+import ViewDeck from "../components/ViewDeck";
 
 const playWidth = CARD_WIDTH * 4;
 const Match = ({ gameState, refreshGameState, addHitMarker }) => {
@@ -168,10 +169,6 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
   };
 
   const bakeCards = () => {
-    matchData.cards = matchData.cards.map((cName) => {
-      return JSON.parse(JSON.stringify(cards.find((c) => c.name == cName)));
-    });
-
     matchData.cards.forEach((c) => {
       c.loc = "deck";
       c.scoring = false;
@@ -251,6 +248,7 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
       onPointerCancel={graspDrop}
     >
       <CardHelp card={matchData.grasp} graspPos={graspPos}></CardHelp>
+      <ViewDeck gameState={gameState} viewButton={true}></ViewDeck>
       <div
         className="absolute text-center text-3xl"
         style={{

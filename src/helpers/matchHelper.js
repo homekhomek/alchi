@@ -7,7 +7,7 @@ import {
   INNER_HEIGHT,
   INNER_WIDTH,
   PLAY_OFFSET,
-} from "./const";
+} from "../const";
 
 export const getCardRenderInfo = (
   curCard,
@@ -82,7 +82,7 @@ export const getCardRenderInfo = (
     return {
       scale: 1.2,
       left: graspPos.x - CARD_WIDTH / 2,
-      top: graspPos.y - CARD_HEIGHT * 1.2,
+      top: graspPos.y - CARD_HEIGHT * 1.4,
       rotate: 0,
       z: 20,
     };

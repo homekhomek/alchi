@@ -11,10 +11,10 @@ import {
   INNER_WIDTH,
   SHOP_DECK_OFFSET,
 } from "../const";
-import { getClosestDropPoint } from "../graspHelper";
-import { sleep } from "../helper";
+import { sleep } from "../helpers/helper";
 import Card from "../Card";
 import CardHelp from "../components/CardHelp";
+import { getClosestDropPoint } from "../helpers/graspHelper";
 
 const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
   const [pickCardData, setPickCardData] = useState({
@@ -25,13 +25,13 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
     grasp: null,
   });
 
-  const [graspID, setGraspID] = useState(null);
-  const [graspPos, setGraspPos] = useState({});
-  const [possibleDropPoints, setPossibleDropPoints] = useState([]);
-
   const refreshPickCard = () => {
     setPickCardData({ ...pickCardData });
   };
+
+  const [graspID, setGraspID] = useState(null);
+  const [graspPos, setGraspPos] = useState({});
+  const [possibleDropPoints, setPossibleDropPoints] = useState([]);
 
   const closestGraspSpot = useMemo(() => {
     return getClosestDropPoint(graspID, graspPos, possibleDropPoints);

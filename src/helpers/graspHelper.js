@@ -1,4 +1,4 @@
-import { CARD_HEIGHT } from "./const";
+import { CARD_HEIGHT } from "../const";
 import { dist } from "./helper";
 
 export const getClosestDropPoint = (graspID, graspPos, possibleDropPoints) => {

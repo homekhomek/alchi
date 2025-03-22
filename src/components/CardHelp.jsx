@@ -31,7 +31,7 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
         opacity: show ? "1" : "0",
         left: "50%",
         bottom: graspPos.y
-          ? INNER_HEIGHT - graspPos.y + FULL_CARD_HEIGHT * 1.4 + "px"
+          ? INNER_HEIGHT - graspPos.y + FULL_CARD_HEIGHT * 1.5 + "px"
           : "20px",
         transform: show
           ? " translateX(-50%) scale(1) "

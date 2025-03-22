@@ -183,7 +183,9 @@ const Card = ({
             }}
           ></div>
           <div className="absolute w-[21px] top-[6px] right-[1px] text-center">
-            {cardData.showValue}
+            {cardData.showValue == null
+              ? cardData.startingValue
+              : cardData.showValue}
           </div>
         </div>
         <div className="w-full h-full absolute backface-hidden rotate-y-180">
