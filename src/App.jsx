@@ -31,7 +31,7 @@ function App() {
   };
 
   return (
-    <div className="h-full bg-red-300">
+    <div className="h-full bg-red-300 ">
       <Game gameState={gameState} refreshGameState={refreshGameState}></Game>
     </div>
   );

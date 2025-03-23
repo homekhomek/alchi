@@ -17,6 +17,7 @@ const Card = ({
   scale = 1,
   opacity = 1,
   cardData = {},
+  sway = false,
   graspStart = () => {},
 }) => {
   const [shakeRot, setShakeRot] = useState(0);
@@ -48,14 +49,18 @@ const Card = ({
 
   return (
     <div
-      className={`absolute perspective-normal bg-transparent`}
+      className={`absolute perspective-normal bg-transparent ${
+        sway ? "sway" : ""
+      }`}
       style={{
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`,
         top: `${top}px`,
         left: `${left}px`,
         zIndex: z,
-        transform: `rotate(${rotate + shakeRot}deg) scale(${trueScale})`,
+        transform: sway
+          ? ``
+          : `rotate(${rotate + shakeRot}deg) scale(${trueScale})`,
         transition: transString,
         opacity: opacity,
       }}

@@ -15,6 +15,7 @@ import { sleep } from "../helpers/helper";
 import Card from "../Card";
 import CardHelp from "../components/CardHelp";
 import { getClosestDropPoint } from "../helpers/graspHelper";
+import useGrasp from "../hooks/useGrasp";
 
 const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
   const [pickCardData, setPickCardData] = useState({
@@ -29,16 +30,8 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
     setPickCardData({ ...pickCardData });
   };
 
-  const [graspID, setGraspID] = useState(null);
-  const [graspPos, setGraspPos] = useState({});
-  const [possibleDropPoints, setPossibleDropPoints] = useState([]);
-
-  const closestGraspSpot = useMemo(() => {
-    return getClosestDropPoint(graspID, graspPos, possibleDropPoints);
-  }, [graspID, graspPos, possibleDropPoints]);
-
-  const graspStart = (ev, card) => {
-    if (graspID != null || pickCardData.state != "picking") return;
+  const graspStartLogic = (card) => {
+    if (graspID != null || pickCardData.state != "picking") return null;
 
     if (card.loc == "shop") {
       card.loc = "grasp";
@@ -50,9 +43,6 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
       pickCardData.deck = null;
       pickCardData.grasp = card;
     }
-
-    setGraspID(ev.pointerId);
-    setGraspPos({ x: ev.clientX, y: ev.clientY });
 
     var possiblePoints = [];
 
@@ -78,54 +68,33 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
         loc: "deck",
         ind: i,
       });
+    refreshPickCard();
+    return possiblePoints;
+  };
 
-    /*
+  const graspDropLogic = () => {
+    var graspCard = pickCardData.grasp;
 
-    if (pickCardData.play.length < 4) {
-      var playCardSeperation = playWidth / (pickCardData.play.length + 1);
-      for (var i = 0; i < pickCardData.play.length + 1; i++) {
-        possiblePoints.push({
-          x:
-            i * playCardSeperation +
-            playCardSeperation / 2 -
-            playWidth / 2 +
-            innerWidth / 2,
-          y: INNER_HEIGHT + PLAY_OFFSET,
-          loc: "play",
-          ind: i,
-        });
-      }
+    if (closestGraspSpot.loc == "shop") {
+      graspCard.loc = "shop";
+      pickCardData.shop.splice(closestGraspSpot.ind, 0, graspCard);
+      pickCardData.grasp = null;
+    } else if (closestGraspSpot.loc == "deck") {
+      graspCard.loc = "deck";
+      pickCardData.deck = graspCard;
+      pickCardData.grasp = null;
     }
-*/
-    setPossibleDropPoints(possiblePoints);
-
     refreshPickCard();
   };
 
-  const graspMove = (ev) => {
-    if (!graspID) return;
-    if (ev.pointerId == graspID) {
-      setGraspPos({ x: ev.clientX, y: ev.clientY });
-    }
-  };
-
-  const graspDrop = (ev) => {
-    if (ev.pointerId == graspID) {
-      setGraspID(null);
-      var graspCard = pickCardData.grasp;
-
-      if (closestGraspSpot.loc == "shop") {
-        graspCard.loc = "shop";
-        pickCardData.shop.splice(closestGraspSpot.ind, 0, graspCard);
-        pickCardData.grasp = null;
-      } else if (closestGraspSpot.loc == "deck") {
-        graspCard.loc = "deck";
-        pickCardData.deck = graspCard;
-        pickCardData.grasp = null;
-      }
-      refreshPickCard();
-    }
-  };
+  const {
+    graspID,
+    graspPos,
+    closestGraspSpot,
+    graspMove,
+    graspStart,
+    graspDrop,
+  } = useGrasp({ graspStartLogic, graspDropLogic });
 
   const getCardRenderInfo = (
     curCard,

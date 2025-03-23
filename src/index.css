@@ -34,6 +34,24 @@
     background: transparent;
 }
 
+
+@keyframes scaleAndSway {
+  0% {
+    transform: scale(1.1) rotate(2deg) ;
+  }
+  50% {
+    transform: scale(1.1) rotate(-2deg);
+  }
+  100% {
+    transform: 
+    scale(1.1) rotate(2deg);
+  }
+}
+
+.sway {
+  animation: scaleAndSway 3s ease-in-out infinite;
+}
+
   body, #root {
     height: 100svh;
     width: 100%;  

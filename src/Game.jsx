@@ -34,7 +34,7 @@ const Game = ({ gameState, refreshGameState }) => {
   }, []);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full overflow-hidden">
       {hitMarkers.map((m, mIndex) => (
         <div
           key={m.start}

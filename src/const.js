@@ -86,7 +86,7 @@ export var cards = [
   {
     name: "drop",
     suit: "water",
-    startingValue: 799,
+    startingValue: 1,
   },
   {
     name: "lantern",
@@ -97,7 +97,7 @@ export var cards = [
   {
     name: "zap",
     suit: "electric",
-    startingValue: 799,
+    startingValue: 1,
   },
   {
     name: "skull",

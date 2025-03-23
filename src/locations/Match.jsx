@@ -22,6 +22,7 @@ import TextSymbol from "../components/TextSymbol";
 import Enemy from "../components/Match/Enemy";
 import { getClosestDropPoint } from "../helpers/graspHelper";
 import ViewDeck from "../components/ViewDeck";
+import useGrasp from "../hooks/useGrasp";
 
 const playWidth = CARD_WIDTH * 4;
 const Match = ({ gameState, refreshGameState, addHitMarker }) => {
@@ -47,16 +48,8 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
 
   const [animStep, setAnimStep] = useState(0);
 
-  const [graspID, setGraspID] = useState(null);
-  const [graspPos, setGraspPos] = useState({});
-  const [possibleDropPoints, setPossibleDropPoints] = useState([]);
-
-  const closestGraspSpot = useMemo(() => {
-    return getClosestDropPoint(graspID, graspPos, possibleDropPoints);
-  }, [graspID, graspPos, possibleDropPoints]);
-
-  const graspStart = (ev, card) => {
-    if (graspID != null || matchData.state != "play") return;
+  const graspStartLogic = (card) => {
+    if (graspID != null || matchData.state != "play") return null;
 
     if (card.loc == "hand") {
       card.loc = "grasp";
@@ -70,8 +63,7 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
       matchData.grasp = card;
     }
 
-    setGraspID(ev.pointerId);
-    setGraspPos({ x: ev.clientX, y: ev.clientY });
+    refreshMatch();
 
     var possiblePoints = [];
 
@@ -101,45 +93,43 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
       }
     }
 
-    setPossibleDropPoints(possiblePoints);
+    return possiblePoints;
+  };
 
+  const graspDropLogic = (ev) => {
+    var graspCard = matchData.grasp;
+
+    if (closestGraspSpot.loc == "hand") {
+      graspCard.loc = "hand";
+      matchData.hand.splice(closestGraspSpot.ind, 0, graspCard);
+      matchData.grasp = null;
+    } else if (closestGraspSpot.loc == "play") {
+      graspCard.loc = "play";
+      matchData.play.splice(closestGraspSpot.ind, 0, graspCard);
+      matchData.grasp = null;
+      refreshMatch();
+
+      scoreCard(
+        closestGraspSpot.ind,
+        matchData,
+        refreshMatch,
+        graspPos,
+        addHitMarker,
+        drawCard,
+        checkWin
+      );
+    }
     refreshMatch();
   };
 
-  const graspMove = (ev) => {
-    if (ev.pointerId == graspID) {
-      setGraspPos({ x: ev.clientX, y: ev.clientY });
-    }
-  };
-
-  const graspDrop = (ev) => {
-    if (ev.pointerId == graspID) {
-      setGraspID(null);
-      var graspCard = matchData.grasp;
-
-      if (closestGraspSpot.loc == "hand") {
-        graspCard.loc = "hand";
-        matchData.hand.splice(closestGraspSpot.ind, 0, graspCard);
-        matchData.grasp = null;
-      } else if (closestGraspSpot.loc == "play") {
-        graspCard.loc = "play";
-        matchData.play.splice(closestGraspSpot.ind, 0, graspCard);
-        matchData.grasp = null;
-        refreshMatch();
-
-        scoreCard(
-          closestGraspSpot.ind,
-          matchData,
-          refreshMatch,
-          graspPos,
-          addHitMarker,
-          drawCard,
-          checkWin
-        );
-      }
-      refreshMatch();
-    }
-  };
+  const {
+    graspID,
+    graspPos,
+    closestGraspSpot,
+    graspMove,
+    graspStart,
+    graspDrop,
+  } = useGrasp({ graspStartLogic, graspDropLogic });
 
   const checkWin = async () => {
     if (matchData.scoreToBeat <= 0) {
@@ -238,7 +228,7 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
 
   return (
     <div
-      className="w-full h-full"
+      className="w-full h-full overflow-hidden"
       style={{
         transition: BOUNCE_TRANSITION,
         opacity: animStep == 14 ? "0" : "1",
@@ -248,7 +238,11 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
       onPointerCancel={graspDrop}
     >
       <CardHelp card={matchData.grasp} graspPos={graspPos}></CardHelp>
-      <ViewDeck gameState={gameState} viewButton={true}></ViewDeck>
+      <ViewDeck
+        gameState={gameState}
+        viewButton={true}
+        refreshGameState={refreshGameState}
+      ></ViewDeck>
       <div
         className="absolute text-center text-3xl"
         style={{

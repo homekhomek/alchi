@@ -11,9 +11,10 @@ import {
   INNER_WIDTH,
 } from "../const";
 import Card from "../Card";
+import CardHelp from "./CardHelp";
 
 const ViewDeck = ({ gameState, viewButton }) => {
-  const [viewingDeck, setViewingDeck] = useState(true);
+  const [viewingDeck, setViewingDeck] = useState(false);
 
   const [viewDeckData, setViewDeckData] = useState({
     state: "starting",
@@ -24,12 +25,21 @@ const ViewDeck = ({ gameState, viewButton }) => {
     setViewDeckData({ ...viewDeckData });
   };
 
+  const selectCard = async (ev, card) => {
+    var deckIndex = gameState.deck.indexOf(card);
+    if (viewDeckData.viewedCardIndex == deckIndex)
+      viewDeckData.viewedCardIndex = null;
+    else viewDeckData.viewedCardIndex = deckIndex;
+
+    refreshViewDeck();
+  };
+
   const openBag = async () => {};
 
   const closeBag = async () => {};
 
   return (
-    <div className="absolute w-full h-full pointer-events-none">
+    <div className="absolute w-full h-full pointer-events-none overflow-hidden">
       <div
         className="absolute"
         style={{
@@ -56,6 +66,15 @@ const ViewDeck = ({ gameState, viewButton }) => {
             zIndex: 200,
           }}
         >
+          <CardHelp
+            graspPos={{ x: 500, y: 500 }}
+            card={
+              viewDeckData.viewedCardIndex != null
+                ? gameState.deck[viewDeckData.viewedCardIndex]
+                : null
+            }
+            customDelay={500}
+          />
           <div
             className="absolute"
             style={{
@@ -104,6 +123,7 @@ const ViewDeck = ({ gameState, viewButton }) => {
                       opacity={"1"}
                       flippedToBack={false}
                       cardData={c}
+                      sway={cIndex == viewDeckData.viewedCardIndex}
                       top={
                         (cIndex % 2) * (FULL_CARD_HEIGHT + DECK_VIEW_SPACING) +
                         DECK_VIEW_SPACING +
@@ -115,6 +135,7 @@ const ViewDeck = ({ gameState, viewButton }) => {
                           (FULL_CARD_WIDTH + DECK_VIEW_SPACING) +
                         DECK_VIEW_SIDE_SPACING
                       }
+                      graspStart={selectCard}
                     ></Card>
                   );
                 })}
