@@ -12,9 +12,7 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
       return;
     }
 
-    var cardFocusTimeout = setTimeout(() => {
-      setCardFocus(card);
-    }, 300);
+    setCardFocus(card);
 
     var showTimeout = setTimeout(() => {
       setShow(true);
@@ -22,7 +20,6 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
 
     return () => {
       clearTimeout(showTimeout);
-      clearTimeout(cardFocusTimeout);
     };
   }, [card]);
 

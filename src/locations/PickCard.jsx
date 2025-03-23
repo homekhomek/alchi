@@ -16,6 +16,7 @@ import Card from "../Card";
 import CardHelp from "../components/CardHelp";
 import { getClosestDropPoint } from "../helpers/graspHelper";
 import useGrasp from "../hooks/useGrasp";
+import ViewDeck from "../components/ViewDeck";
 
 const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
   const [pickCardData, setPickCardData] = useState({
@@ -205,6 +206,7 @@ const PickCard = ({ gameState, refreshGameState, addHitMarker }) => {
         card={pickCardData.grasp}
         customDelay={500}
       />
+      <ViewDeck gameState={gameState} viewButton={true}></ViewDeck>
       <div
         className="absolute text-center text-3xl"
         style={{

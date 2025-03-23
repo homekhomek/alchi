@@ -14,14 +14,14 @@
 
 @layer components {
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
 }
 
 /* Make the draggable part (thumb) black */
 ::-webkit-scrollbar-thumb {
     background-color: #050e1a;
-    border-radius: 10px;
+    border-radius: 6px;
     margin: 2px; /* Adds padding around the thumb */
 }
 

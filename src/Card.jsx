@@ -19,6 +19,7 @@ const Card = ({
   cardData = {},
   sway = false,
   graspStart = () => {},
+  onClick = () => {},
 }) => {
   const [shakeRot, setShakeRot] = useState(0);
 
@@ -66,6 +67,9 @@ const Card = ({
       }}
       onPointerDown={(ev) => {
         graspStart(ev, cardData);
+      }}
+      onClick={(ev) => {
+        onClick(ev, cardData);
       }}
     >
       <div
