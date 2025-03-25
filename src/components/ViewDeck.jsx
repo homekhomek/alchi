@@ -165,7 +165,7 @@ const ViewDeck = ({ gameState, viewButton }) => {
                           (FULL_CARD_WIDTH + DECK_VIEW_SPACING) +
                         DECK_VIEW_SIDE_SPACING
                       }
-                      onClick={selectCard}
+                      graspStart={selectCard}
                     ></Card>
                   );
                 })}

@@ -15,6 +15,7 @@ import {
   MAP_VIEW_DOT_SPACING,
 } from "../const";
 import { sleep } from "../helpers/helper";
+import Waypoint from "./Map/Waypoint";
 
 const ViewMap = ({ gameState, viewButton }) => {
   const [viewMapData, setViewMapData] = useState({
@@ -130,7 +131,6 @@ const ViewMap = ({ gameState, viewButton }) => {
               >
                 {gameState.map.map((m, mIndex) => {
                   var lookingAt = false;
-                  var symbolSize = 80;
                   if (
                     scrollPosition >= (mIndex - 0.5) * MAP_VIEW_DOT_SPACING &&
                     scrollPosition <= (mIndex + 0.5) * MAP_VIEW_DOT_SPACING
@@ -138,53 +138,13 @@ const ViewMap = ({ gameState, viewButton }) => {
                     lookingAt = true;
                   }
 
-                  if (mIndex % 3 == 0) {
-                    symbolSize = 110;
-                  }
-
                   return (
-                    <>
-                      {m.type == "match" && (
-                        <div
-                          className={"absolute " + (lookingAt ? "sway" : "")}
-                          style={{
-                            backgroundImage:
-                              "url(/enemies/" +
-                              (gameState.pos >= mIndex
-                                ? m.enemy
-                                : "question_mark") +
-                              ".svg)",
-                            transition: BOUNCE_TRANSITION,
-                            left:
-                              INNER_WIDTH / 2 -
-                              (DRAWING_SCALE * 320) / 2 +
-                              mIndex * MAP_VIEW_DOT_SPACING,
-                            bottom:
-                              MAP_VIEW_DOT_BOTTOM_PADDING +
-                              (lookingAt ? 100 : 60),
-                            width: DRAWING_SCALE * 320 + "px",
-                            height: DRAWING_SCALE * 320 + "px",
-                            backgroundSize: "contain",
-                          }}
-                        ></div>
-                      )}
-                      <div
-                        className={"absolute "}
-                        style={{
-                          backgroundImage: "url(/ui/map/" + m.symbol + ".svg)",
-                          transition: BOUNCE_TRANSITION,
-                          left:
-                            INNER_WIDTH / 2 -
-                            (DRAWING_SCALE * symbolSize) / 2 +
-                            mIndex * MAP_VIEW_DOT_SPACING,
-                          bottom:
-                            MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 20 : 0),
-                          width: DRAWING_SCALE * symbolSize + "px",
-                          height: DRAWING_SCALE * symbolSize + "px",
-                          backgroundSize: "contain",
-                        }}
-                      ></div>
-                    </>
+                    <Waypoint
+                      lookingAt={lookingAt}
+                      gameState={gameState}
+                      mapInfo={m}
+                      mIndex={mIndex}
+                    />
                   );
                 })}
               </div>

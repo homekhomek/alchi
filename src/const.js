@@ -115,3 +115,12 @@ export var cards = [
     middle: [{ conditional: "water", type: "add_points", value: -1 }],
   },
 ];
+
+const enemies = [
+  {
+    name: "rat_bishop",
+    abilityDesc: "",
+    health: 35,
+    location: 0,
+  },
+];
