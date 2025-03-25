@@ -239,8 +239,14 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
       onPointerCancel={graspDrop}
     >
       <CardHelp card={matchData.grasp} graspPos={graspPos}></CardHelp>
-      <ViewDeck gameState={gameState} viewButton={true}></ViewDeck>
-      <ViewMap gameState={gameState} viewButton={true}></ViewMap>
+      <ViewDeck
+        gameState={gameState}
+        viewButton={matchData.state == "play"}
+      ></ViewDeck>
+      <ViewMap
+        gameState={gameState}
+        viewButton={matchData.state == "play"}
+      ></ViewMap>
       <div
         className="absolute text-center text-3xl"
         style={{

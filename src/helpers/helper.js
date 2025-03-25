@@ -27,6 +27,7 @@ export const generateMap = () => {
     // Push enemy
     map.push({
       type: "match",
+      symbol: "skull",
       enemy: "rat_bishop",
       index: i * 3,
     });
@@ -34,6 +35,7 @@ export const generateMap = () => {
     // Push pick card
     map.push({
       type: "pickcard",
+      symbol: "black_dot",
       index: i * 3 + 1,
     });
 
@@ -41,6 +43,7 @@ export const generateMap = () => {
     map.push({
       choice1: "pickcard",
       choice2: "removecard",
+      symbol: "black_dot",
       index: i * 3 + 2,
     });
   }

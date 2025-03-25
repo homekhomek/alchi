@@ -82,7 +82,7 @@ const ViewDeck = ({ gameState, viewButton }) => {
         }}
         onClick={openBag}
       ></div>
-      {viewDeckData.state == "viewing" && (
+      {viewDeckData.state == "viewing" && viewButton && (
         <div
           className="absolute w-full h-full"
           style={{

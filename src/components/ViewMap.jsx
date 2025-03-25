@@ -19,7 +19,6 @@ import { sleep } from "../helpers/helper";
 const ViewMap = ({ gameState, viewButton }) => {
   const [viewMapData, setViewMapData] = useState({
     state: "starting",
-    viewedCardIndex: null,
   });
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollRef = useRef(null);
@@ -28,15 +27,6 @@ const ViewMap = ({ gameState, viewButton }) => {
 
   const refreshViewMap = () => {
     setViewMapData({ ...viewMapData });
-  };
-
-  const selectCard = async (ev, card) => {
-    var deckIndex = gameState.deck.indexOf(card);
-    if (viewMapData.viewedCardIndex == deckIndex)
-      viewMapData.viewedCardIndex = null;
-    else viewMapData.viewedCardIndex = deckIndex;
-
-    refreshViewMap();
   };
 
   const handleScroll = () => {
@@ -99,7 +89,7 @@ const ViewMap = ({ gameState, viewButton }) => {
         onClick={openMap}
       ></div>
 
-      {viewMapData.state == "viewing" && (
+      {viewMapData.state == "viewing" && viewButton && (
         <div
           className="absolute w-full h-full overflow-hidden"
           style={{
@@ -120,7 +110,7 @@ const ViewMap = ({ gameState, viewButton }) => {
             }}
           >
             <div
-              className="absolute w-full overflow-y-hidden overflow-x-hidden"
+              className="absolute w-full overflow-y-hidden overflow-x-scroll"
               ref={scrollRef}
               onScroll={handleScroll}
               style={{
@@ -141,7 +131,6 @@ const ViewMap = ({ gameState, viewButton }) => {
                 {gameState.map.map((m, mIndex) => {
                   var lookingAt = false;
                   var symbolSize = 80;
-                  var symbol = "black_dot.svg";
                   if (
                     scrollPosition >= (mIndex - 0.5) * MAP_VIEW_DOT_SPACING &&
                     scrollPosition <= (mIndex + 0.5) * MAP_VIEW_DOT_SPACING
@@ -151,26 +140,51 @@ const ViewMap = ({ gameState, viewButton }) => {
 
                   if (mIndex % 3 == 0) {
                     symbolSize = 110;
-                    symbol = "skull.svg";
                   }
 
                   return (
-                    <div
-                      className={"absolute " + (lookingAt ? "sway" : "")}
-                      style={{
-                        backgroundImage: "url(/ui/map/" + symbol + ")",
-                        transition: BOUNCE_TRANSITION,
-                        left:
-                          INNER_WIDTH / 2 -
-                          (DRAWING_SCALE * symbolSize) / 2 +
-                          mIndex * MAP_VIEW_DOT_SPACING,
-                        bottom:
-                          MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 20 : 0),
-                        width: DRAWING_SCALE * symbolSize + "px",
-                        height: DRAWING_SCALE * symbolSize + "px",
-                        backgroundSize: "contain",
-                      }}
-                    ></div>
+                    <>
+                      {m.type == "match" && (
+                        <div
+                          className={"absolute " + (lookingAt ? "sway" : "")}
+                          style={{
+                            backgroundImage:
+                              "url(/enemies/" +
+                              (gameState.pos >= mIndex
+                                ? m.enemy
+                                : "question_mark") +
+                              ".svg)",
+                            transition: BOUNCE_TRANSITION,
+                            left:
+                              INNER_WIDTH / 2 -
+                              (DRAWING_SCALE * 320) / 2 +
+                              mIndex * MAP_VIEW_DOT_SPACING,
+                            bottom:
+                              MAP_VIEW_DOT_BOTTOM_PADDING +
+                              (lookingAt ? 100 : 60),
+                            width: DRAWING_SCALE * 320 + "px",
+                            height: DRAWING_SCALE * 320 + "px",
+                            backgroundSize: "contain",
+                          }}
+                        ></div>
+                      )}
+                      <div
+                        className={"absolute "}
+                        style={{
+                          backgroundImage: "url(/ui/map/" + m.symbol + ".svg)",
+                          transition: BOUNCE_TRANSITION,
+                          left:
+                            INNER_WIDTH / 2 -
+                            (DRAWING_SCALE * symbolSize) / 2 +
+                            mIndex * MAP_VIEW_DOT_SPACING,
+                          bottom:
+                            MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 20 : 0),
+                          width: DRAWING_SCALE * symbolSize + "px",
+                          height: DRAWING_SCALE * symbolSize + "px",
+                          backgroundSize: "contain",
+                        }}
+                      ></div>
+                    </>
                   );
                 })}
               </div>
