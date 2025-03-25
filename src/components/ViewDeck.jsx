@@ -82,96 +82,98 @@ const ViewDeck = ({ gameState, viewButton }) => {
         }}
         onClick={openBag}
       ></div>
-      <div
-        className="absolute w-full h-full"
-        style={{
-          transition: BOUNCE_TRANSITION,
-          backgroundColor: "rgba(0,0,0,.5)",
-          zIndex: 200,
-          opacity: animStep > 1 ? "1" : "0",
-          pointerEvents: viewDeckData.state == "viewing" ? "auto" : "none",
-        }}
-        onClick={closeBag}
-      >
-        <CardHelp
-          graspPos={{ x: 500, y: INNER_HEIGHT - CARD_HEIGHT * 2 }}
-          card={
-            viewDeckData.viewedCardIndex != null
-              ? gameState.deck[viewDeckData.viewedCardIndex]
-              : null
-          }
-          customDelay={500}
-        />
+      {viewDeckData.state == "viewing" && (
         <div
-          className="absolute"
+          className="absolute w-full h-full"
           style={{
-            transition: "all .3s ease-out ",
-            backgroundImage: "url(/ui/deck_view_back.svg)",
-            backgroundSize: "cover",
-            left: INNER_WIDTH / 2 - 300,
-            bottom: animStep > 1 ? "0px" : -CARD_HEIGHT * 3 + "px",
-            width: 600 + "px",
-            height: CARD_HEIGHT * 3 + "px",
-            opacity: "1",
-            zIndex: 1,
+            transition: BOUNCE_TRANSITION,
+            backgroundColor: "rgba(0,0,0,.5)",
+            zIndex: 200,
+            opacity: animStep > 1 ? "1" : "0",
+            pointerEvents: viewDeckData.state == "viewing" ? "auto" : "none",
           }}
-          onClick={(ev) => {
-            ev.stopPropagation();
-          }}
+          onClick={closeBag}
         >
+          <CardHelp
+            graspPos={{ x: 500, y: INNER_HEIGHT - CARD_HEIGHT * 2 }}
+            card={
+              viewDeckData.viewedCardIndex != null
+                ? gameState.deck[viewDeckData.viewedCardIndex]
+                : null
+            }
+            customDelay={500}
+          />
           <div
-            className="absolute h-full"
+            className="absolute"
             style={{
-              transform: "rotate(180deg)",
-              width: HAND_WIDTH + "px",
-              left: (600 - HAND_WIDTH) / 2,
-              top: "60px",
-              overflowX: "scroll",
-              overflowY: "hidden",
-              transform: "rotate(180deg)",
-              direction: "rtl",
+              transition: "all .25s ease-in-out ",
+              backgroundImage: "url(/ui/deck_view_back.svg)",
+              backgroundSize: "cover",
+              left: INNER_WIDTH / 2 - 300,
+              bottom: animStep > 1 ? "0px" : -CARD_HEIGHT * 3 + "px",
+              width: 600 + "px",
+              height: CARD_HEIGHT * 3 + "px",
+              opacity: "1",
+              zIndex: 1,
+            }}
+            onClick={(ev) => {
+              ev.stopPropagation();
             }}
           >
             <div
               className="absolute h-full"
               style={{
                 transform: "rotate(180deg)",
-                width:
-                  Math.floor(gameState.deck.length / 2) *
-                    (FULL_CARD_WIDTH + DECK_VIEW_SPACING) +
-                  DECK_VIEW_SIDE_SPACING * 2 -
-                  DECK_VIEW_SPACING +
-                  "px",
-                direction: "ltr",
+                width: HAND_WIDTH + "px",
+                left: (600 - HAND_WIDTH) / 2,
+                top: "60px",
+                overflowX: "scroll",
+                overflowY: "hidden",
+                transform: "rotate(180deg)",
+                direction: "rtl",
               }}
             >
-              {gameState.deck.map((c, cIndex) => {
-                return (
-                  <Card
-                    key={cIndex}
-                    opacity={"1"}
-                    flippedToBack={false}
-                    cardData={c}
-                    sway={cIndex == viewDeckData.viewedCardIndex}
-                    top={
-                      (cIndex % 2) * (FULL_CARD_HEIGHT + DECK_VIEW_SPACING) +
-                      DECK_VIEW_SPACING +
-                      10
-                    }
-                    scale={1}
-                    left={
-                      Math.floor(cIndex / 2) *
-                        (FULL_CARD_WIDTH + DECK_VIEW_SPACING) +
-                      DECK_VIEW_SIDE_SPACING
-                    }
-                    onClick={selectCard}
-                  ></Card>
-                );
-              })}
+              <div
+                className="absolute h-full"
+                style={{
+                  transform: "rotate(180deg)",
+                  width:
+                    Math.floor(gameState.deck.length / 2) *
+                      (FULL_CARD_WIDTH + DECK_VIEW_SPACING) +
+                    DECK_VIEW_SIDE_SPACING * 2 -
+                    DECK_VIEW_SPACING +
+                    "px",
+                  direction: "ltr",
+                }}
+              >
+                {gameState.deck.map((c, cIndex) => {
+                  return (
+                    <Card
+                      key={cIndex}
+                      opacity={"1"}
+                      flippedToBack={false}
+                      cardData={c}
+                      sway={cIndex == viewDeckData.viewedCardIndex}
+                      top={
+                        (cIndex % 2) * (FULL_CARD_HEIGHT + DECK_VIEW_SPACING) +
+                        DECK_VIEW_SPACING +
+                        10
+                      }
+                      scale={1}
+                      left={
+                        Math.floor(cIndex / 2) *
+                          (FULL_CARD_WIDTH + DECK_VIEW_SPACING) +
+                        DECK_VIEW_SIDE_SPACING
+                      }
+                      onClick={selectCard}
+                    ></Card>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -47,8 +47,16 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
             Ingredient Details
           </div>
           <div className="w-full text-sm block mt-1">
-            {cardFocus.showValue > 0 ? "+" : ""}
-            {cardFocus.showValue}
+            {cardFocus.showValue == null
+              ? cardFocus.startingValue > 0
+                ? "+"
+                : ""
+              : cardFocus.showValue > 0
+              ? "+"
+              : ""}
+            {cardFocus.showValue == null
+              ? cardFocus.startingValue
+              : cardFocus.showValue}
             <TextSymbol symbol="sword" />
           </div>
           <div className=" text-sm block w-full">

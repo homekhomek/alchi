@@ -23,6 +23,7 @@ import Enemy from "../components/Match/Enemy";
 import { getClosestDropPoint } from "../helpers/graspHelper";
 import ViewDeck from "../components/ViewDeck";
 import useGrasp from "../hooks/useGrasp";
+import ViewMap from "../components/ViewMap";
 
 const playWidth = CARD_WIDTH * 4;
 const Match = ({ gameState, refreshGameState, addHitMarker }) => {
@@ -239,6 +240,7 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
     >
       <CardHelp card={matchData.grasp} graspPos={graspPos}></CardHelp>
       <ViewDeck gameState={gameState} viewButton={true}></ViewDeck>
+      <ViewMap gameState={gameState} viewButton={true}></ViewMap>
       <div
         className="absolute text-center text-3xl"
         style={{

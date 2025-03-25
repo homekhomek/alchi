@@ -21,6 +21,10 @@ export const SHOP_DECK_OFFSET = -540;
 export const DECK_VIEW_SPACING = 5;
 export const DECK_VIEW_SIDE_SPACING = 50;
 
+export const MAP_VIEW_BOTTOM_OFFSET = 100;
+export const MAP_VIEW_DOT_SPACING = DRAWING_SCALE * 200;
+export const MAP_VIEW_DOT_BOTTOM_PADDING = DRAWING_SCALE * 270;
+
 export const BOUNCE_TRANSITION = "all .25s cubic-bezier(.47,1.64,.41,.8)";
 
 export var suits = [

@@ -20,3 +20,30 @@ export const bakeCardNameList = (cardNames) => {
     return JSON.parse(JSON.stringify(cards.find((c) => c.name == cName)));
   });
 };
+
+export const generateMap = () => {
+  var map = [];
+  for (var i = 0; i < 12; i++) {
+    // Push enemy
+    map.push({
+      type: "match",
+      enemy: "rat_bishop",
+      index: i * 3,
+    });
+
+    // Push pick card
+    map.push({
+      type: "pickcard",
+      index: i * 3 + 1,
+    });
+
+    // Push choice
+    map.push({
+      choice1: "pickcard",
+      choice2: "removecard",
+      index: i * 3 + 2,
+    });
+  }
+
+  return map;
+};

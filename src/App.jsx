@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Game from "./Game";
+import { generateMap } from "./helpers/helper";
 
 var startingDeckCardNames = [
   "seed",
@@ -16,9 +17,10 @@ var startingDeckCardNames = [
 
 var startingGameState = {
   currentLoc: "starting",
-  matchNo: 0,
+  pos: 6,
   plays: 4,
   deck: startingDeckCardNames,
+  map: generateMap(),
 };
 
 function App() {
