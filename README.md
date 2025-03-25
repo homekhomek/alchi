@@ -9,3 +9,12 @@ choose a minor or major event
 minor events:
 gain another card
 remove a random card
+
+todo:
+fix deck and discard display
+finish map
+enemy dynamics start
+enemy data
+increment map animation
+animations in and out of match,
+boss battles?

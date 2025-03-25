@@ -101,7 +101,7 @@ const ViewMap = ({ gameState, viewButton }) => {
 
       {viewMapData.state == "viewing" && (
         <div
-          className="absolute w-full h-full overflow-y-hidden overflow-x-scroll"
+          className="absolute w-full h-full overflow-hidden"
           style={{
             transition: BOUNCE_TRANSITION,
             backgroundColor: "#f2f2da",
@@ -120,7 +120,7 @@ const ViewMap = ({ gameState, viewButton }) => {
             }}
           >
             <div
-              className="absolute w-full overflow-y-hidden overflow-x-scroll"
+              className="absolute w-full overflow-y-hidden overflow-x-hidden"
               ref={scrollRef}
               onScroll={handleScroll}
               style={{
