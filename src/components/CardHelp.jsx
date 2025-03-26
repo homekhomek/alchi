@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FULL_CARD_HEIGHT, INNER_HEIGHT, suits } from "../const";
 import TextSymbol from "./TextSymbol";
+import SymbolText from "./SymbolText";
 
 const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
   const [show, setShow] = useState(false);
@@ -93,13 +94,11 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
                     </div>
                     {suits.some((s) => s.name == so.conditional) && (
                       <div className="block mb-1">
-                        for each
-                        <TextSymbol
-                          marginLeft={3}
+                        <SymbolText
+                          msg={`for each [${so.conditional}]:`}
+                          marginLeft={1}
                           marginRight={3}
-                          symbol={so.conditional}
                         />
-                        :
                       </div>
                     )}
                     {so.conditional == "first_card" && (

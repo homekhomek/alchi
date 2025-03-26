@@ -123,7 +123,6 @@ const ViewDeck = ({ gameState, viewButton }) => {
             <div
               className="absolute h-full"
               style={{
-                transform: "rotate(180deg)",
                 width: HAND_WIDTH + "px",
                 left: (600 - HAND_WIDTH) / 2,
                 top: "60px",

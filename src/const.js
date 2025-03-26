@@ -22,7 +22,7 @@ export const DECK_VIEW_SPACING = 5;
 export const DECK_VIEW_SIDE_SPACING = 50;
 
 export const MAP_VIEW_BOTTOM_OFFSET = 100;
-export const MAP_VIEW_DOT_SPACING = DRAWING_SCALE * 210;
+export const MAP_VIEW_DOT_SPACING = DRAWING_SCALE * 360;
 export const MAP_VIEW_DOT_BOTTOM_PADDING = DRAWING_SCALE * 270;
 
 export const BOUNCE_TRANSITION = "all .25s cubic-bezier(.47,1.64,.41,.8)";
@@ -116,11 +116,101 @@ export var cards = [
   },
 ];
 
-const enemies = [
+export const areaTypes = [
+  {
+    name: "pickcard",
+    probability: 5,
+  },
+  { name: "removecard", probability: 3 },
+  { name: "dupecard", probability: 1 },
+  { name: "shopupgrade", probability: 3 },
+];
+
+export const areas = [
+  {
+    type: "pickcard",
+    name: "shopkeep",
+    probability: 5,
+    desc: "[card_plus] 1 of 3 cards",
+    zones: [0, 1, 2],
+  },
+  {
+    type: "pickcard",
+    name: "marketer",
+    probability: 5,
+    desc: "[card_plus] 1 of 4 cards",
+    zones: [1, 2],
+  },
+  {
+    type: "removecard",
+    name: "venus",
+    probability: 5,
+    desc: "[card_minus] from deck",
+    zones: [0, 1, 2],
+  },
+  {
+    type: "dupecard",
+    name: "dwarf",
+    probability: 5,
+    desc: "duplicate a card",
+    zones: [0, 1, 2],
+  },
+  {
+    type: "shopupgrade",
+    name: "spidermarket",
+    probability: 5,
+    desc: "upgrade shop",
+    zones: [0, 1, 2],
+  },
+];
+
+export const enemies = [
+  // Area 1
+  {
+    name: "gnome",
+    abilityDesc: "",
+    health: 35,
+    location: 0,
+  },
   {
     name: "rat_bishop",
     abilityDesc: "",
     health: 35,
-    location: 0,
+    location: 1,
+  },
+  {
+    name: "seahorse",
+    abilityDesc: "",
+    health: 35,
+    location: 2,
+  },
+  // Guardians
+  {
+    name: "grass_guardian",
+    abilityDesc: "",
+    health: 35,
+    location: 3,
+    boss: true,
+  },
+  {
+    name: "water_guardian",
+    abilityDesc: "",
+    health: 35,
+    location: 3,
+    boss: true,
+  },
+  {
+    name: "fire_guardian",
+    abilityDesc: "",
+    health: 35,
+    location: 3,
+    boss: true,
+  },
+  {
+    name: "electric_guardian",
+    abilityDesc: "",
+    health: 35,
+    location: 3,
+    boss: true,
   },
 ];

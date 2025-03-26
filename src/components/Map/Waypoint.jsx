@@ -7,9 +7,13 @@ import {
 } from "../../const";
 
 const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
-  var symbolSize = 60;
-  if (mapInfo.type == "match") {
+  var symbolSize = 80;
+  if (mapInfo.symbol == "boss_skull") {
+    symbolSize = 140;
+  } else if (mapInfo.symbol == "skull") {
     symbolSize = 110;
+  } else if (mapInfo.symbol == "choice") {
+    symbolSize = 120;
   }
   return (
     <>
@@ -33,6 +37,7 @@ const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
           }}
         ></div>
       )}
+
       <div
         className={"absolute "}
         style={{
@@ -48,6 +53,59 @@ const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
           backgroundSize: "contain",
         }}
       ></div>
+
+      {mapInfo.type == "choice" && (
+        <>
+          <div
+            className={"absolute "}
+            style={{
+              backgroundImage: "url(/ui/map/" + mapInfo.choice1.type + ".svg)",
+              transition: BOUNCE_TRANSITION,
+              left:
+                INNER_WIDTH / 2 -
+                (DRAWING_SCALE * 80) / 2 +
+                mIndex * MAP_VIEW_DOT_SPACING,
+              bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 20 : 0),
+              width: DRAWING_SCALE * 80 + "px",
+              height: DRAWING_SCALE * 80 + "px",
+              backgroundSize: "contain",
+            }}
+          ></div>
+          <div
+            className={"absolute "}
+            style={{
+              backgroundImage: "url(/ui/map/" + mapInfo.choice2.type + ".svg)",
+              transition: BOUNCE_TRANSITION,
+              left:
+                INNER_WIDTH / 2 -
+                (DRAWING_SCALE * 80) / 2 +
+                mIndex * MAP_VIEW_DOT_SPACING,
+              bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 20 : 0),
+              width: DRAWING_SCALE * 80 + "px",
+              height: DRAWING_SCALE * 80 + "px",
+              backgroundSize: "contain",
+            }}
+          ></div>
+        </>
+      )}
+
+      {mapInfo.type != "end" && (
+        <div
+          className={"absolute "}
+          style={{
+            backgroundImage: "url(/ui/map/black_dot.svg)",
+            transition: BOUNCE_TRANSITION,
+            left:
+              INNER_WIDTH / 2 -
+              (DRAWING_SCALE * 30) / 2 +
+              (mIndex + 0.5) * MAP_VIEW_DOT_SPACING,
+            bottom: MAP_VIEW_DOT_BOTTOM_PADDING + DRAWING_SCALE * 30,
+            width: DRAWING_SCALE * 30 + "px",
+            height: DRAWING_SCALE * 30 + "px",
+            backgroundSize: "contain",
+          }}
+        ></div>
+      )}
     </>
   );
 };

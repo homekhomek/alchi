@@ -1,4 +1,4 @@
-import { cards } from "../const";
+import { areas, areaTypes, cards, enemies } from "../const";
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -21,32 +21,108 @@ export const bakeCardNameList = (cardNames) => {
   });
 };
 
+export const pickFromArrayWithProbabilites = (ary) => {
+  var tot = ary.reduce((prev, c) => prev + c.probability, 0);
+  var pick = Math.floor(Math.random() * tot);
+
+  return ary.find((o) => {
+    if (pick < o.probability) return true;
+    pick -= o.probability;
+  });
+};
+
 export const generateMap = () => {
   var map = [];
+  var mIndex = 1;
+
+  map.push({
+    type: "start",
+    symbol: "start",
+    index: 0,
+  });
+
   for (var i = 0; i < 12; i++) {
+    var enemyList = enemies.filter((e) => e.location == i);
     // Push enemy
     map.push({
       type: "match",
-      symbol: "skull",
-      enemy: "rat_bishop",
-      index: i * 3,
+      symbol: i % 4 == 3 ? "boss_skull" : "skull",
+      enemy: enemyList[Math.floor(Math.random() * enemyList.length)],
+      index: mIndex,
     });
+    mIndex += 1;
 
-    // Push pick card
-    map.push({
-      type: "pickcard",
-      symbol: "black_dot",
-      index: i * 3 + 1,
-    });
+    if (i < 11) {
+      for (var j = 0; j < 2 + Math.floor(Math.random() * 2); j++) {
+        if (j > 0) {
+          var possCategories = [];
+          areas.forEach((a) => {
+            if (
+              !possCategories.includes(a.type) &&
+              a.zones.includes(Math.floor((i + 1) / 4))
+            )
+              possCategories.push(a.type);
+          });
 
-    // Push choice
-    map.push({
-      choice1: "pickcard",
-      choice2: "removecard",
-      symbol: "black_dot",
-      index: i * 3 + 2,
-    });
+          possCategories = possCategories.map((c) =>
+            areaTypes.find((a) => a.name == c)
+          );
+
+          var pickedCat1 = pickFromArrayWithProbabilites(possCategories);
+          possCategories = possCategories.filter((o) => o != pickedCat1);
+          var pickedCat2 = pickFromArrayWithProbabilites(possCategories);
+
+          var areasFromPickedCat1 = areas.filter(
+            (a) =>
+              a.type == pickedCat1.name &&
+              a.zones.includes(Math.floor((i + 1) / 4))
+          );
+
+          var area1 = pickFromArrayWithProbabilites(areasFromPickedCat1);
+
+          var areasFromPickedCat2 = areas.filter(
+            (a) =>
+              a.type == pickedCat2.name &&
+              a.zones.includes(Math.floor((i + 1) / 4))
+          );
+          var area2 = pickFromArrayWithProbabilites(areasFromPickedCat2);
+
+          console.log(area1);
+
+          map.push({
+            type: "choice",
+            symbol: "choice",
+            choice1: area1,
+            choice2: area2,
+            index: mIndex,
+          });
+
+          // choices
+        } else {
+          var pickCardList = areas.filter(
+            (a) =>
+              a.type == "pickcard" && a.zones.includes(Math.floor((i + 1) / 4))
+          );
+
+          var pcObj =
+            pickCardList[Math.floor(pickCardList.length * Math.random())];
+
+          map.push({
+            type: pcObj.type,
+            symbol: "pickcard",
+            index: mIndex,
+          });
+          mIndex += 1;
+        }
+      }
+    }
   }
+
+  map.push({
+    type: "end",
+    symbol: "end",
+    index: mIndex,
+  });
 
   return map;
 };
