@@ -7,9 +7,9 @@ import {
 } from "../../const";
 
 const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
-  var symbolSize = 80;
+  var symbolSize = 100;
   if (mapInfo.symbol == "boss_skull") {
-    symbolSize = 140;
+    symbolSize = 180;
   } else if (mapInfo.symbol == "skull") {
     symbolSize = 110;
   } else if (mapInfo.symbol == "choice") {
@@ -63,9 +63,12 @@ const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
               transition: BOUNCE_TRANSITION,
               left:
                 INNER_WIDTH / 2 -
-                (DRAWING_SCALE * 80) / 2 +
+                DRAWING_SCALE * 90 +
                 mIndex * MAP_VIEW_DOT_SPACING,
-              bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 20 : 0),
+              bottom:
+                MAP_VIEW_DOT_BOTTOM_PADDING +
+                (lookingAt ? 20 : 0) +
+                DRAWING_SCALE * 70,
               width: DRAWING_SCALE * 80 + "px",
               height: DRAWING_SCALE * 80 + "px",
               backgroundSize: "contain",
@@ -77,10 +80,13 @@ const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
               backgroundImage: "url(/ui/map/" + mapInfo.choice2.type + ".svg)",
               transition: BOUNCE_TRANSITION,
               left:
-                INNER_WIDTH / 2 -
-                (DRAWING_SCALE * 80) / 2 +
+                INNER_WIDTH / 2 +
+                (DRAWING_SCALE * 15) / 2 +
                 mIndex * MAP_VIEW_DOT_SPACING,
-              bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 20 : 0),
+              bottom:
+                MAP_VIEW_DOT_BOTTOM_PADDING +
+                (lookingAt ? 20 : 0) -
+                (DRAWING_SCALE * 50) / 2,
               width: DRAWING_SCALE * 80 + "px",
               height: DRAWING_SCALE * 80 + "px",
               backgroundSize: "contain",

@@ -116,7 +116,6 @@ const ViewMap = ({ gameState, viewButton }) => {
               onScroll={handleScroll}
               style={{
                 transition: BOUNCE_TRANSITION,
-                background: "linear-gradient(to right, #ff7e5f, #feb47b)",
                 height: INNER_HEIGHT - MAP_VIEW_BOTTOM_OFFSET,
               }}
             >
@@ -124,8 +123,10 @@ const ViewMap = ({ gameState, viewButton }) => {
                 className="absolute h-full"
                 style={{
                   transition: BOUNCE_TRANSITION,
-                  background: "linear-gradient(to right, #ff7e5f, #feb47b)",
-                  width: INNER_WIDTH + 35 * MAP_VIEW_DOT_SPACING,
+                  backgroundColor: "#f2f2da",
+                  width:
+                    INNER_WIDTH +
+                    (gameState.map.length - 1) * MAP_VIEW_DOT_SPACING,
                   opacity: animStep > 1 ? "1" : "0",
                 }}
               >
