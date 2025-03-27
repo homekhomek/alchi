@@ -16,3 +16,4 @@ finish map
 enemy dynamics start
 enemy data
 boss battles?
+redo the map button

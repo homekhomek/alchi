@@ -54,7 +54,7 @@ const ViewMap = ({
     await sleep(50);
 
     if (scrollRef.current != null)
-      scrollRef.current.scrollLeft = scrollPosition;
+      scrollRef.current.scrollLeft = gameState.pos * MAP_VIEW_DOT_SPACING;
     setAnimStep(2);
     await sleep(500);
     if (isIncrement) {
@@ -128,23 +128,27 @@ const ViewMap = ({
           <div
             className="absolute w-full h-full "
             style={{
-              transition: "BOUNCE_TRANSITION",
+              transition: BOUNCE_TRANSITION,
               backgroundColor: "#f2f2da",
               zIndex: 200,
             }}
           >
-            <div
-              className={"absolute "}
-              style={{
-                backgroundImage: "url(/ui/red_x.svg)",
-                transition: BOUNCE_TRANSITION,
-                left: INNER_WIDTH / 2 - (DRAWING_SCALE * 80) / 2,
-                bottom: MAP_VIEW_DOT_BOTTOM_PADDING / 2,
-                width: DRAWING_SCALE * 80 + "px",
-                height: DRAWING_SCALE * 80 + "px",
-                backgroundSize: "contain",
-              }}
-            ></div>
+            {!isIncrement && (
+              <div
+                className={"absolute "}
+                style={{
+                  backgroundImage: "url(/ui/red_x.svg)",
+                  transition: BOUNCE_TRANSITION,
+                  left: INNER_WIDTH / 2 - (DRAWING_SCALE * 80) / 2,
+                  bottom: MAP_VIEW_DOT_BOTTOM_PADDING / 2,
+                  width: DRAWING_SCALE * 80 + "px",
+                  height: DRAWING_SCALE * 80 + "px",
+                  backgroundSize: "contain",
+                }}
+                onClick={closeMap}
+              ></div>
+            )}
+
             <div
               className="absolute w-full overflow-y-hidden "
               ref={scrollRef}

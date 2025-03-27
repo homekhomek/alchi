@@ -16,7 +16,8 @@ export const scoreCard = async (
   graspPos,
   addHitMarker,
   drawCard,
-  checkWin
+  checkWin,
+  isReactivated = false
 ) => {
   // Conditional is met
   const doEffect = async (scoreObj, cardToScore) => {
