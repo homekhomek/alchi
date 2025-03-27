@@ -20,17 +20,62 @@ export const scoreCard = async (
   isReactivated = false
 ) => {
   // Conditional is met
-  const doEffect = async (scoreObj, cardToScore) => {
+  const doEffect = async (scoreObj, cardToScore, newCard) => {
     if (scoreObj.type == "add_points") {
       await adjustScore(scoreObj.value, cardToScore);
+      return true;
     } else if (scoreObj.type == "multiply_points") {
       await adjustScore(
         (scoreObj.value - 1) * cardToScore.showValue,
         cardToScore
       );
+      return true;
     } else if (scoreObj.type == "draw_card") {
       for (var i = 0; i < scoreObj.value; i++) await drawCard();
+
+      return true;
+    } else if (scoreObj.type == "move_towards_played" && !isReactivated) {
+      if (matchData.play.indexOf(newCard) < matchData.play.indexOf(cardToScore))
+        return await moveCard(cardToScore, true);
+      else return await moveCard(cardToScore, false);
+    } else if (scoreObj.type == "reactivate" && !isReactivated) {
+      await scoreCard(
+        matchData.play.indexOf(cardToScore),
+        matchData,
+        refreshMatch,
+        graspPos,
+        addHitMarker,
+        drawCard,
+        checkWin,
+        true
+      );
+      return true;
     }
+  };
+
+  const moveCard = async (cardToMove, left = false) => {
+    var playIndex = matchData.play.indexOf(cardToMove);
+    if (
+      matchData.play.length <= 1 ||
+      (!left && matchData.play.length - 1 == playIndex) ||
+      (left && playIndex == 0)
+    )
+      return false;
+
+    if (left)
+      [matchData.play[playIndex], matchData.play[playIndex - 1]] = [
+        matchData.play[playIndex - 1],
+        matchData.play[playIndex],
+      ];
+    else
+      [matchData.play[playIndex], matchData.play[playIndex + 1]] = [
+        matchData.play[playIndex + 1],
+        matchData.play[playIndex],
+      ];
+
+    refreshMatch();
+
+    return true;
   };
 
   // Increment score
@@ -134,19 +179,19 @@ export const scoreCard = async (
     // Check first middle for conditional
     var firstScoreObj = cardToScore.middle[0];
     if (suits.some((s) => s.name == firstScoreObj.conditional)) {
-      for (var j = 0; j < cardToScore.middle.length; j++) {
-        var scoreObj = cardToScore.middle[j];
-        for (var k = 0; k < currentPlay.length; k++) {
-          if (
-            currentPlay[k].suit == scoreObj.conditional &&
-            currentPlay[k] != cardToScore &&
-            (newCard == null || newCard == currentPlay[k])
-          ) {
+      for (var k = 0; k < currentPlay.length; k++) {
+        if (
+          currentPlay[k].suit == firstScoreObj.conditional &&
+          currentPlay[k] != cardToScore &&
+          (newCard == null || newCard == currentPlay[k])
+        ) {
+          for (var j = 0; j < cardToScore.middle.length; j++) {
+            var scoreObj = cardToScore.middle[j];
             var usingCard = currentPlay[k];
             usingCard.scoring = true;
             refreshMatch();
             await sleep(250);
-            await doEffect(scoreObj, cardToScore);
+            await doEffect(scoreObj, cardToScore, newCard);
 
             usingCard.scoring = false;
             refreshMatch();
@@ -162,7 +207,14 @@ export const scoreCard = async (
       for (var j = 0; j < cardToScore.middle.length; j++) {
         var scoreObj = cardToScore.middle[j];
         await sleep(250);
-        await doEffect(scoreObj, cardToScore);
+        await doEffect(scoreObj, cardToScore, newCard);
+      }
+    }
+    if (firstScoreObj.conditional == "card_played" && newCard != null) {
+      for (var j = 0; j < cardToScore.middle.length; j++) {
+        var scoreObj = cardToScore.middle[j];
+        await sleep(250);
+        await doEffect(scoreObj, cardToScore, newCard);
       }
     }
   };
@@ -235,8 +287,9 @@ export const scoreCard = async (
   }
 
   // Check all the middles
-  for (var i = 0; i < currentPlay.length; i++) {
-    var cardToCheck = currentPlay[i];
+  var currentPlayCopy = [...currentPlay];
+  for (var i = 0; i < currentPlayCopy.length; i++) {
+    var cardToCheck = currentPlayCopy[i];
     if (cardToCheck.middle && cardToCheck != cardToScore) {
       await sleep(150);
       cardToCheck.scoring = true;
@@ -247,6 +300,8 @@ export const scoreCard = async (
     }
     refreshMatch();
   }
+
+  if (isReactivated) return;
 
   // Un shrink
   for (var i = 0; i < currentPlay.length; i++) {
@@ -263,6 +318,7 @@ export const scoreCard = async (
     // Discard play cards
     matchData.state = "damaging";
     var damage = matchData.scoreInHand;
+    matchData.animateScoreInHand = false;
     // Hit enemy
     if (damage >= 0) {
       for (var k = 0; k < damage; k++) {
@@ -301,6 +357,7 @@ export const scoreCard = async (
     if (gameOver) return;
 
     matchData.scoreInHand = 0;
+    matchData.animateScoreInHand = true;
 
     for (var i = 0; i < 4; i++) {
       var c = matchData.play[0];

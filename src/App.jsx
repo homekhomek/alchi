@@ -4,11 +4,11 @@ import { generateMap } from "./helpers/helper";
 
 var startingDeckCardNames = [
   "seed",
-  "leaf",
-  "leaf",
-  "leaf",
-  "leaf",
-  "leaf",
+  "racoon",
+  "racoon",
+  "racoon",
+  "racoon",
+  "racoon",
   "firefly",
   "ember",
   "watercan",

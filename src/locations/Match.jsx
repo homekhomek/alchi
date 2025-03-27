@@ -38,6 +38,7 @@ const Match = ({ gameState, refreshGameState, enemy }) => {
     cards: JSON.parse(JSON.stringify(gameState.deck)), // Store list of cards, and their {loc} property
 
     scoreInHand: 0,
+    animateScoreInHand: true,
     scoreToBeat: enemy.health,
 
     playsLeft: gameState.plays,
@@ -226,6 +227,7 @@ const Match = ({ gameState, refreshGameState, enemy }) => {
   useEffect(() => {
     startMatch();
 
+    /*
     var particleTestInterval = setInterval(() => {
       addParticle({
         startPos: { x: 500, y: 500 },
@@ -236,6 +238,7 @@ const Match = ({ gameState, refreshGameState, enemy }) => {
         size: 80,
       });
     }, 1000);
+    */
   }, []);
 
   /* RENDER METHODS */

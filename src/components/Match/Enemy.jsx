@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import {
   BOUNCE_TRANSITION,
   DRAWING_SCALE,
@@ -10,8 +10,12 @@ import {
 } from "../../const";
 import SymbolText from "../SymbolText";
 import TextSymbol from "../TextSymbol";
+import { useHitMarkers } from "../../contexts/HitMarkerContext";
 
 const Enemy = ({ animStep, matchData, enemy }) => {
+  const { addHitMarker } = useHitMarkers();
+  const scoreInHandRef = useRef(null);
+  const [pastEnemyDamage, setPastEnemyDamage] = useState(0);
   const [enemyShakeRot, setEnemyShakeRot] = useState(0);
   useEffect(() => {
     if (matchData.state != "damaging") return;
@@ -25,6 +29,21 @@ const Enemy = ({ animStep, matchData, enemy }) => {
       clearInterval(shakeInterval);
     };
   }, [matchData.state]);
+
+  useEffect(() => {
+    if (pastEnemyDamage != matchData.scoreInHand) {
+      if (scoreInHandRef.current && matchData.animateScoreInHand) {
+        var rect = scoreInHandRef.current.getBoundingClientRect();
+        addHitMarker(
+          rect.x + rect.width / 2 + Math.floor(Math.random() * 25) - 12,
+          rect.y,
+          pastEnemyDamage - matchData.scoreInHand
+        );
+      }
+
+      setPastEnemyDamage(matchData.scoreInHand);
+    }
+  }, [matchData.scoreInHand]);
   return (
     <>
       <div
@@ -41,6 +60,7 @@ const Enemy = ({ animStep, matchData, enemy }) => {
       </div>
       <div
         className="absolute text-center text-3xl"
+        ref={scoreInHandRef}
         style={{
           transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
           left: innerWidth / 2 - 250 + (matchData.scoreInHand == 0 ? 0 : 33),
