@@ -9,7 +9,7 @@ const Game = ({ gameState, refreshGameState }) => {
   // NEW GAME START
   const startGame = async () => {
     gameState.deck = bakeCardNameList(gameState.deck);
-    gameState.state = "incrementmap";
+    gameState.state = "match";
     refreshGameState(gameState);
   };
 

@@ -112,6 +112,19 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
                         <TextSymbol symbol="sword" />
                       </div>
                     )}
+                    {so.type == "multiply_points" && (
+                      <div className="block mb-2 ">
+                        x{so.value}
+                        <TextSymbol symbol="sword" />
+                      </div>
+                    )}
+                    {so.type == "draw_card" && (
+                      <div className="block mb-2 ">
+                        {so.value > 1
+                          ? "draw " + so.value + " cards"
+                          : "draw a card"}
+                      </div>
+                    )}
                   </>
                 );
               })}

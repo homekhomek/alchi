@@ -255,38 +255,6 @@ const Match = ({ gameState, refreshGameState, enemy }) => {
         gameState={gameState}
         viewButton={matchData.state == "play"}
       ></ViewMap>
-      <div
-        className="absolute text-center text-3xl"
-        style={{
-          transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
-          left: innerWidth / 2 - 250 + (matchData.scoreInHand == 0 ? 0 : -33),
-          width: 500,
-          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 760 + "px",
-          height: 50,
-        }}
-      >
-        <SymbolText msg={matchData.scoreToBeat + "[heart]"} />
-      </div>
-      <div
-        className="absolute text-center text-3xl"
-        style={{
-          transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
-          left: innerWidth / 2 - 250 + (matchData.scoreInHand == 0 ? 0 : 33),
-          opacity: matchData.scoreInHand == 0 ? "0" : "1",
-          width: 500,
-          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 630 + "px",
-          height: 50,
-        }}
-      >
-        {matchData.scoreInHand > 0 ? "-" : "+"}
-        {Math.abs(matchData.scoreInHand)}
-
-        {matchData.scoreInHand > 0 ? (
-          <TextSymbol symbol={"sword"}></TextSymbol>
-        ) : (
-          <TextSymbol symbol={"heart"}></TextSymbol>
-        )}
-      </div>
 
       <Enemy animStep={animStep} matchData={matchData} enemy={enemy}></Enemy>
 

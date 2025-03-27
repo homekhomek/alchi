@@ -22,6 +22,13 @@ export const scoreCard = async (
   const doEffect = async (scoreObj, cardToScore) => {
     if (scoreObj.type == "add_points") {
       await adjustScore(scoreObj.value, cardToScore);
+    } else if (scoreObj.type == "multiply_points") {
+      await adjustScore(
+        (scoreObj.value - 1) * cardToScore.showValue,
+        cardToScore
+      );
+    } else if (scoreObj.type == "draw_card") {
+      for (var i = 0; i < scoreObj.value; i++) await drawCard();
     }
   };
 
@@ -35,6 +42,7 @@ export const scoreCard = async (
     );
     cardToScore.shaking = true;
     refreshMatch();
+    var targetScore = matchData.scoreInHand + value;
     if (value >= 0) {
       for (var k = 0; k < value; k++) {
         setTimeout(() => {
@@ -51,6 +59,10 @@ export const scoreCard = async (
         }, 50 * k);
       }
       await sleep(50 * (value + 2));
+      if (matchData.scoreInHand != targetScore) {
+        matchData.scoreInHand = targetScore;
+        refreshMatch();
+      }
     } else {
       for (var k = 0; k < value * -1; k++) {
         setTimeout(() => {
@@ -67,6 +79,10 @@ export const scoreCard = async (
         }, 50 * k);
       }
       await sleep(50 * (value * -1 + 2));
+    }
+    if (matchData.scoreInHand != targetScore) {
+      matchData.scoreInHand = targetScore;
+      refreshMatch();
     }
 
     cardToScore.shaking = false;

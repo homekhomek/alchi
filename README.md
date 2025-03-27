@@ -2,18 +2,17 @@ svg guide: 260x380, guides at the 10x10 margins, 12 for big shapes, 8 for small,
 [jehk](https://lospec.com/palette-list/jehkoba64) for palette
 
 12 rounds
-every win: choose one of three cards
 
-choose a minor or major event
-
-minor events:
-gain another card
-remove a random card
+suit vibes:
+grass: support, draw, grow
+fire: damage, big bonuses, destroy cards
+electric: compound, multiplies, reactivates
+water: movement, defense (if thats a thing)
+dark: evil
 
 todo:
 fix deck and discard display
 finish map
 enemy dynamics start
 enemy data
-animations in and out of match
 boss battles?

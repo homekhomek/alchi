@@ -107,7 +107,33 @@ export var cards = [
     ],
     right: [{ suit: "water" }],
   },
-
+  {
+    name: "flower",
+    suit: "grass",
+    startingValue: 1,
+    rarity: "common",
+    left: [{ suit: "fire" }],
+  },
+  {
+    name: "yellowberry",
+    suit: "grass",
+    startingValue: 1,
+    rarity: "common",
+    right: [{ suit: "electric" }],
+  },
+  {
+    name: "mushroomsmall",
+    suit: "grass",
+    startingValue: 1,
+    rarity: "common",
+    middle: [
+      {
+        conditional: "dark",
+        type: "draw_card",
+        value: 1,
+      },
+    ],
+  },
   {
     name: "zap",
     suit: "electric",
@@ -115,17 +141,37 @@ export var cards = [
     rarity: "common",
   },
   {
-    name: "ember",
-    suit: "fire",
-    rarity: "common",
-    startingValue: 1,
-  },
-  {
     name: "lantern",
     suit: "electric",
     rarity: "common",
     startingValue: 1,
     left: [{ suit: "fire" }],
+  },
+  {
+    name: "tail",
+    suit: "electric",
+    rarity: "common",
+    startingValue: 1,
+    left: [{ suit: "water" }],
+  },
+  {
+    name: "tulip",
+    suit: "electric",
+    rarity: "common",
+    startingValue: 1,
+    middle: [
+      {
+        conditional: "grass",
+        type: "multiply_points",
+        value: 2,
+      },
+    ],
+  },
+  {
+    name: "ember",
+    suit: "fire",
+    rarity: "common",
+    startingValue: 1,
   },
   {
     name: "skull",
@@ -262,28 +308,28 @@ export const enemies = [
   // Guardians
   {
     name: "grass_guardian",
-    abilityDesc: "",
+    abilityDesc: "immune [grass]",
     health: 35,
     location: 3,
     boss: true,
   },
   {
     name: "water_guardian",
-    abilityDesc: "",
+    abilityDesc: "immune [water]",
     health: 35,
     location: 3,
     boss: true,
   },
   {
     name: "fire_guardian",
-    abilityDesc: "",
+    abilityDesc: "immune [fire]",
     health: 35,
     location: 3,
     boss: true,
   },
   {
     name: "electric_guardian",
-    abilityDesc: "",
+    abilityDesc: "immune [electric]",
     health: 35,
     location: 3,
     boss: true,

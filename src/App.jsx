@@ -13,13 +13,14 @@ var startingDeckCardNames = [
   "zap",
   "skull",
   "oil",
+  "tulip",
 ];
 
 var startingGameState = {
   state: "starting",
   plays: 4,
   deck: startingDeckCardNames,
-  pos: 0,
+  pos: 1,
   map: generateMap(),
 };
 

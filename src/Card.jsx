@@ -105,6 +105,26 @@ const Card = ({
                   type: "text",
                   value: m.value >= 0 ? "+" + m.value : m.value,
                 });
+              } else if (m.type == "multiply_points") {
+                desc.push({
+                  type: "symbol",
+                  value: "x",
+                });
+                desc.push({
+                  type: "text",
+                  value: m.value,
+                });
+              } else if (m.type == "draw_card") {
+                if (m.value > 1)
+                  desc.push({
+                    type: "text",
+                    value: m.value,
+                  });
+
+                desc.push({
+                  type: "symbol",
+                  value: "card_plus",
+                });
               }
 
               return (
