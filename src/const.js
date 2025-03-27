@@ -51,10 +51,53 @@ export var suits = [
 ];
 
 export var cards = [
+  // COMMON CARDS
+  {
+    name: "drop",
+    suit: "water",
+    startingValue: 1,
+    rarity: "common",
+  },
+  {
+    name: "watercan",
+    suit: "water",
+    startingValue: 1,
+    rarity: "common",
+    middle: [{ conditional: "grass", type: "add_points", value: 1 }],
+  },
+  {
+    name: "bluemelon",
+    suit: "water",
+    startingValue: 1,
+    rarity: "common",
+    right: [{ suit: "fire" }],
+  },
+  {
+    name: "tadpole",
+    suit: "water",
+    startingValue: 1,
+    rarity: "common",
+    left: [{ suit: "electric" }],
+  },
+  {
+    name: "fishskeleton",
+    suit: "water",
+    startingValue: 1,
+    rarity: "common",
+    left: [{ suit: "dark" }],
+    left: [{ suit: "right" }],
+  },
+  {
+    name: "leaf",
+    suit: "grass",
+    startingValue: 1,
+    rarity: "common",
+  },
   {
     name: "seed",
     suit: "grass",
     startingValue: 1,
+    rarity: "common",
     middle: [
       {
         conditional: "first_card",
@@ -64,56 +107,61 @@ export var cards = [
     ],
     right: [{ suit: "water" }],
   },
+
   {
-    name: "leaf",
-    suit: "grass",
+    name: "zap",
+    suit: "electric",
     startingValue: 1,
-  },
-  {
-    name: "firefly",
-    suit: "fire",
-    startingValue: 1,
-    right: [{ suit: "electric" }],
-    left: [{ suit: "grass" }],
+    rarity: "common",
   },
   {
     name: "ember",
     suit: "fire",
-    startingValue: 1,
-  },
-  {
-    name: "watercan",
-    suit: "water",
-    startingValue: 1,
-    middle: [{ conditional: "grass", type: "add_points", value: 1 }],
-  },
-  {
-    name: "drop",
-    suit: "water",
+    rarity: "common",
     startingValue: 1,
   },
   {
     name: "lantern",
     suit: "electric",
+    rarity: "common",
     startingValue: 1,
     left: [{ suit: "fire" }],
-  },
-  {
-    name: "zap",
-    suit: "electric",
-    startingValue: 1,
   },
   {
     name: "skull",
     suit: "dark",
     startingValue: -1,
+    rarity: "common",
+  },
+  {
+    name: "firefly",
+    suit: "fire",
+    rarity: "common",
+    startingValue: 1,
+    right: [{ suit: "electric" }],
+    left: [{ suit: "grass" }],
   },
   {
     name: "oil",
     suit: "dark",
+    rarity: "common",
     startingValue: -1,
     middle: [{ conditional: "water", type: "add_points", value: -1 }],
   },
+  // Beak
+
+  // UNCOMMON
+
+  // Pelican
+  // Frog
+  //
+
+  // RARE
+
+  // LEGEND
+
+  // Thunder storm
+  // Dragon scale
 ];
 
 export const shopOdds = [
@@ -194,16 +242,16 @@ export const areas = [
 export const enemies = [
   // Area 1
   {
-    name: "gnome",
+    name: "sword_frog",
     abilityDesc: "",
-    health: 35,
-    location: 1,
+    health: 16,
+    location: 0,
   },
   {
     name: "rat_bishop",
     abilityDesc: "+3 [heart] per turn",
     health: 35,
-    location: 0,
+    location: 1,
   },
   {
     name: "seahorse",

@@ -54,7 +54,7 @@ const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
                 mIndex * MAP_VIEW_DOT_SPACING,
               bottom:
                 MAP_VIEW_DOT_BOTTOM_PADDING +
-                (lookingAt ? 150 : 100) +
+                (lookingAt ? 180 : 130) +
                 DRAWING_SCALE * 320,
               width: DRAWING_SCALE * 320 + "px",
               height: DRAWING_SCALE * 100 + "px",
