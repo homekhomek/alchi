@@ -29,10 +29,10 @@ const Enemy = ({ animStep, matchData, enemy }) => {
       style={{
         backgroundImage: "url(/enemies/" + enemy.name + ".svg)",
         transition: BOUNCE_TRANSITION,
-        left: INNER_WIDTH / 2 - 160 * DRAWING_SCALE * 1.5,
-        top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 580 + "px",
-        width: DRAWING_SCALE * 320 * 1.5 + "px",
-        height: DRAWING_SCALE * 320 * 1.5 + "px",
+        left: INNER_WIDTH / 2 - 160 * DRAWING_SCALE * 1.2,
+        top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 590 + "px",
+        width: DRAWING_SCALE * 320 * 1.2 + "px",
+        height: DRAWING_SCALE * 320 * 1.2 + "px",
         transform: `rotate(${enemyShakeRot}deg) scale(${
           animStep >= 11 ? ".8" : "1"
         })`,

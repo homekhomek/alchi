@@ -39,9 +39,15 @@ export const generateMap = () => {
     type: "start",
     symbol: "start",
     index: 0,
+    zone: 0,
   });
 
+  var zone = 0;
+
   for (var i = 0; i < 12; i++) {
+    if (i > 3) zone = 1;
+    if (i > 7) zone = 2;
+
     var enemyList = enemies.filter((e) => e.location == i);
     // Push enemy
     map.push({
@@ -49,6 +55,7 @@ export const generateMap = () => {
       symbol: i % 4 == 3 ? "boss_skull" : "skull",
       enemy: enemyList[Math.floor(Math.random() * enemyList.length)],
       index: mIndex,
+      zone: zone,
     });
     mIndex += 1;
 
@@ -93,6 +100,7 @@ export const generateMap = () => {
             choice1: area1,
             choice2: area2,
             index: mIndex,
+            zone: zone,
           });
 
           // choices
@@ -109,6 +117,7 @@ export const generateMap = () => {
             type: pcObj.type,
             symbol: "pickcard",
             index: mIndex,
+            zone: zone,
           });
           mIndex += 1;
         }
@@ -120,6 +129,7 @@ export const generateMap = () => {
     type: "end",
     symbol: "end",
     index: mIndex,
+    zone: 2,
   });
 
   return map;

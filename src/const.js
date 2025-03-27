@@ -197,13 +197,13 @@ export const enemies = [
     name: "gnome",
     abilityDesc: "",
     health: 35,
-    location: 0,
+    location: 1,
   },
   {
     name: "rat_bishop",
-    abilityDesc: "",
+    abilityDesc: "+3 [heart] per turn",
     health: 35,
-    location: 1,
+    location: 0,
   },
   {
     name: "seahorse",

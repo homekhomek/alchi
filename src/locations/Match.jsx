@@ -25,9 +25,12 @@ import ViewDeck from "../components/ViewDeck";
 import useGrasp from "../hooks/useGrasp";
 import ViewMap from "../components/ViewMap";
 import BackDrop from "../components/Backdrop";
+import { useHitMarkers } from "../contexts/HitMarkerContext";
+import SymbolText from "../components/SymbolText";
 
 const playWidth = CARD_WIDTH * 4;
-const Match = ({ gameState, refreshGameState, enemy, addHitMarker }) => {
+const Match = ({ gameState, refreshGameState, enemy }) => {
+  const { addHitMarker } = useHitMarkers();
   const [matchData, setMatchData] = useState({
     matchState: "start",
     cards: JSON.parse(JSON.stringify(gameState.deck)), // Store list of cards, and their {loc} property
@@ -204,6 +207,7 @@ const Match = ({ gameState, refreshGameState, enemy, addHitMarker }) => {
     shuffleArray(matchData.deck);
 
     refreshMatch();
+    await sleep(200);
 
     setAnimStep(1);
 
@@ -223,7 +227,7 @@ const Match = ({ gameState, refreshGameState, enemy, addHitMarker }) => {
 
   /* RENDER METHODS */
   const cardOpacity = (curCard) => {
-    return curCard.loc == "deck" ? 1 : 1;
+    return animStep < 1 ? 0 : 1;
   };
 
   const cardFlipped = (curCard) => {
@@ -257,12 +261,11 @@ const Match = ({ gameState, refreshGameState, enemy, addHitMarker }) => {
           transition: "all .25s cubic-bezier(.47,1.64,.41,.8)",
           left: innerWidth / 2 - 250 + (matchData.scoreInHand == 0 ? 0 : -33),
           width: 500,
-          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 630 + "px",
+          top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 760 + "px",
           height: 50,
         }}
       >
-        {matchData.scoreToBeat}
-        <TextSymbol symbol={"heart"}></TextSymbol>
+        <SymbolText msg={matchData.scoreToBeat + "[heart]"} />
       </div>
       <div
         className="absolute text-center text-3xl"

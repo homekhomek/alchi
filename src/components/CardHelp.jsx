@@ -37,7 +37,7 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
         transform: show
           ? " translateX(-50%) scale(1) "
           : "translateX(-50%) scale(0.8) ",
-        zIndex: 30,
+        zIndex: 999,
         pointerEvents: "none",
       }}
     >

@@ -5,37 +5,89 @@ import {
   MAP_VIEW_DOT_BOTTOM_PADDING,
   MAP_VIEW_DOT_SPACING,
 } from "../../const";
+import SymbolText from "../SymbolText";
 
 const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
   var symbolSize = 100;
   if (mapInfo.symbol == "boss_skull") {
-    symbolSize = 180;
+    symbolSize = 250;
   } else if (mapInfo.symbol == "skull") {
-    symbolSize = 110;
+    symbolSize = 160;
   } else if (mapInfo.symbol == "choice") {
     symbolSize = 120;
+  } else if (mapInfo.type == "end") {
+    symbolSize = 150;
   }
+
   return (
     <>
-      {mapInfo.type == "match" && (
-        <div
-          className={"absolute " + (lookingAt ? "sway" : "")}
-          style={{
-            backgroundImage:
-              "url(/enemies/" +
-              (gameState.pos >= mIndex ? mapInfo.enemy.name : "question_mark") +
-              ".svg)",
-            transition: BOUNCE_TRANSITION,
-            left:
-              INNER_WIDTH / 2 -
-              (DRAWING_SCALE * 320) / 2 +
-              mIndex * MAP_VIEW_DOT_SPACING,
-            bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 150 : 100),
-            width: DRAWING_SCALE * 320 + "px",
-            height: DRAWING_SCALE * 320 + "px",
-            backgroundSize: "contain",
-          }}
-        ></div>
+      {mapInfo.type == "match" && mapInfo.enemy && (
+        <>
+          <div
+            className={"absolute " + (lookingAt ? "sway" : "")}
+            style={{
+              backgroundImage:
+                "url(/enemies/" +
+                (mapInfo.zone <= gameState.map[gameState.pos].zone
+                  ? mapInfo.enemy.name
+                  : "question_mark") +
+                ".svg)",
+              transition: BOUNCE_TRANSITION,
+              left:
+                INNER_WIDTH / 2 -
+                (DRAWING_SCALE * 320) / 2 +
+                mIndex * MAP_VIEW_DOT_SPACING,
+              bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 150 : 100),
+              width: DRAWING_SCALE * 320 + "px",
+              height: DRAWING_SCALE * 320 + "px",
+              backgroundSize: "contain",
+            }}
+          ></div>
+
+          <div
+            className={"absolute text-center text-3xl"}
+            style={{
+              transition: BOUNCE_TRANSITION,
+              left:
+                INNER_WIDTH / 2 -
+                (DRAWING_SCALE * 320) / 2 +
+                mIndex * MAP_VIEW_DOT_SPACING,
+              bottom:
+                MAP_VIEW_DOT_BOTTOM_PADDING +
+                (lookingAt ? 150 : 100) +
+                DRAWING_SCALE * 320,
+              width: DRAWING_SCALE * 320 + "px",
+              height: DRAWING_SCALE * 100 + "px",
+              backgroundSize: "contain",
+            }}
+          >
+            <SymbolText
+              msg={mapInfo.enemy.health + " [heart]"}
+              marginLeft={0}
+              size={50}
+            />
+          </div>
+          <div
+            className={"absolute text-center"}
+            style={{
+              transition: BOUNCE_TRANSITION,
+              left:
+                INNER_WIDTH / 2 -
+                (DRAWING_SCALE * 320) / 2 +
+                mIndex * MAP_VIEW_DOT_SPACING,
+              bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 80 : 50),
+              width: DRAWING_SCALE * 320 + "px",
+              height: DRAWING_SCALE * 100 + "px",
+              backgroundSize: "contain",
+            }}
+          >
+            <SymbolText
+              msg={mapInfo.enemy.abilityDesc}
+              marginLeft={0}
+              size={40}
+            />
+          </div>
+        </>
       )}
 
       <div

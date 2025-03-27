@@ -13,7 +13,8 @@ export const getCardRenderInfo = (
   curCard,
   matchData,
   closestGraspSpot,
-  graspPos
+  graspPos,
+  animStep
 ) => {
   var scale = 1;
   var top = 0;
@@ -68,25 +69,19 @@ export const getCardRenderInfo = (
       totalCards += 1;
     }
 
-    return {
-      scale: 1,
-      left:
-        playIndex * FULL_CARD_WIDTH -
-        (totalCards * FULL_CARD_WIDTH) / 2 +
-        INNER_WIDTH / 2,
-      top: INNER_HEIGHT + PLAY_OFFSET,
-      rotate: 0,
-      z: playIndex + 10,
-    };
+    left =
+      playIndex * FULL_CARD_WIDTH -
+      (totalCards * FULL_CARD_WIDTH) / 2 +
+      INNER_WIDTH / 2;
+    top = INNER_HEIGHT + PLAY_OFFSET;
+    z = playIndex + 50;
   } else if (curCard.loc == "grasp") {
-    return {
-      scale: 1.2,
-      left: graspPos.x - CARD_WIDTH / 2,
-      top: graspPos.y - CARD_HEIGHT * 1.4,
-      rotate: 0,
-      z: 20,
-    };
+    scale = 1.2;
+    left = graspPos.x - CARD_WIDTH / 2;
+    top = graspPos.y - CARD_HEIGHT * 1.4;
+    z = 900;
   }
+
   return {
     scale: scale,
     top: top,
