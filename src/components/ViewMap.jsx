@@ -17,11 +17,18 @@ import {
 import { sleep } from "../helpers/helper";
 import Waypoint from "./Map/Waypoint";
 
-const ViewMap = ({ gameState, viewButton }) => {
+const ViewMap = ({
+  gameState,
+  viewButton,
+  isIncrement = false,
+  refreshGameState,
+}) => {
   const [viewMapData, setViewMapData] = useState({
     state: "starting",
   });
-  const [scrollPosition, setScrollPosition] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(
+    gameState.pos * MAP_VIEW_DOT_SPACING
+  );
   const scrollRef = useRef(null);
 
   const [animStep, setAnimStep] = useState(0);
@@ -42,18 +49,32 @@ const ViewMap = ({ gameState, viewButton }) => {
 
   const openMap = async () => {
     viewMapData.state = "viewing";
+
     refreshViewMap();
     await sleep(50);
+
+    if (scrollRef.current != null)
+      scrollRef.current.scrollLeft = scrollPosition;
     setAnimStep(2);
     await sleep(500);
-    if (scrollRef.current != null)
-      scrollRef.current.scrollBy({
-        left: gameState.pos * MAP_VIEW_DOT_SPACING,
-        behavior: "smooth",
-      });
+    if (isIncrement) {
+      await sleep(500);
+      if (scrollRef.current != null)
+        scrollRef.current.scrollBy({
+          left: (gameState.pos + 1) * MAP_VIEW_DOT_SPACING,
+          behavior: "smooth",
+        });
+
+      await sleep(2000);
+      setAnimStep(3);
+      await sleep(500);
+      gameState.state = "match";
+      gameState.pos += 1;
+      refreshGameState();
+    }
   };
 
-  const closeBag = async () => {
+  const closeMap = async () => {
     setAnimStep(1);
     await sleep(50);
     viewMapData.state = "waiting";
@@ -64,6 +85,9 @@ const ViewMap = ({ gameState, viewButton }) => {
   };
   const startAnim = async () => {
     setAnimStep(1);
+    if (isIncrement) {
+      openMap();
+    }
   };
   useEffect(() => {
     startAnim();
@@ -90,32 +114,44 @@ const ViewMap = ({ gameState, viewButton }) => {
         onClick={openMap}
       ></div>
 
-      {viewMapData.state == "viewing" && viewButton && (
+      {viewMapData.state == "viewing" && (viewButton || isIncrement) && (
         <div
           className="absolute w-full h-full overflow-hidden"
           style={{
-            transition: BOUNCE_TRANSITION,
+            transition: "all .3s linear",
             backgroundColor: "#f2f2da",
             zIndex: 200,
-            opacity: animStep > 1 ? "1" : "0",
+            opacity: animStep == 2 ? "1" : "0",
             pointerEvents: viewMapData.state == "viewing" ? "auto" : "none",
           }}
-          onClick={closeBag}
         >
           <div
             className="absolute w-full h-full "
             style={{
-              transition: BOUNCE_TRANSITION,
+              transition: "BOUNCE_TRANSITION",
               backgroundColor: "#f2f2da",
               zIndex: 200,
             }}
           >
             <div
-              className="absolute w-full overflow-y-hidden overflow-x-scroll"
+              className={"absolute "}
+              style={{
+                backgroundImage: "url(/ui/red_x.svg)",
+                transition: BOUNCE_TRANSITION,
+                left: INNER_WIDTH / 2 - (DRAWING_SCALE * 80) / 2,
+                bottom: MAP_VIEW_DOT_BOTTOM_PADDING / 2,
+                width: DRAWING_SCALE * 80 + "px",
+                height: DRAWING_SCALE * 80 + "px",
+                backgroundSize: "contain",
+              }}
+            ></div>
+            <div
+              className="absolute w-full overflow-y-hidden "
               ref={scrollRef}
               onScroll={handleScroll}
               style={{
                 transition: BOUNCE_TRANSITION,
+                overflowX: isIncrement ? "hidden" : "scroll",
                 height: INNER_HEIGHT - MAP_VIEW_BOTTOM_OFFSET,
               }}
             >
@@ -141,6 +177,7 @@ const ViewMap = ({ gameState, viewButton }) => {
 
                   return (
                     <Waypoint
+                      key={mIndex}
                       lookingAt={lookingAt}
                       gameState={gameState}
                       mapInfo={m}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Match from "./locations/Match";
 import PickCard from "./locations/PickCard";
 import { bakeCardNameList } from "./helpers/helper";
+import ViewMap from "./components/ViewMap";
 
 const Game = ({ gameState, refreshGameState }) => {
   const [hitMarkers, setHitMarkers] = useState([]);
@@ -25,7 +26,7 @@ const Game = ({ gameState, refreshGameState }) => {
   // NEW GAME START
   const startGame = async () => {
     gameState.deck = bakeCardNameList(gameState.deck);
-    gameState.currentLoc = "match";
+    gameState.state = "incrementmap";
     refreshGameState(gameState);
   };
 
@@ -34,7 +35,7 @@ const Game = ({ gameState, refreshGameState }) => {
   }, []);
 
   return (
-    <div className="w-full h-full overflow-hidden">
+    <div className="w-full h-full overflow-hidden bg-[#472e3e]">
       {hitMarkers.map((m, mIndex) => (
         <div
           key={m.start}
@@ -49,18 +50,27 @@ const Game = ({ gameState, refreshGameState }) => {
           {m.msg}
         </div>
       ))}
-      {gameState.currentLoc == "match" && (
+      {gameState.state == "match" && (
         <Match
+          gameState={gameState}
+          refreshGameState={refreshGameState}
+          enemy={gameState.map[gameState.pos].enemy}
+          addHitMarker={addHitMarker}
+        />
+      )}
+      {gameState.state == "pickcard" && (
+        <PickCard
           gameState={gameState}
           refreshGameState={refreshGameState}
           addHitMarker={addHitMarker}
         />
       )}
-      {gameState.currentLoc == "pickcard" && (
-        <PickCard
+      {gameState.state == "incrementmap" && (
+        <ViewMap
           gameState={gameState}
           refreshGameState={refreshGameState}
-          addHitMarker={addHitMarker}
+          isIncrement={true}
+          viewButton={false}
         />
       )}
     </div>

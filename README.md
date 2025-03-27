@@ -15,6 +15,5 @@ fix deck and discard display
 finish map
 enemy dynamics start
 enemy data
-increment map animation
-animations in and out of match,
+animations in and out of match
 boss battles?

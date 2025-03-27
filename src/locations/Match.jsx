@@ -24,15 +24,16 @@ import { getClosestDropPoint } from "../helpers/graspHelper";
 import ViewDeck from "../components/ViewDeck";
 import useGrasp from "../hooks/useGrasp";
 import ViewMap from "../components/ViewMap";
+import BackDrop from "../components/Backdrop";
 
 const playWidth = CARD_WIDTH * 4;
-const Match = ({ gameState, refreshGameState, addHitMarker }) => {
+const Match = ({ gameState, refreshGameState, enemy, addHitMarker }) => {
   const [matchData, setMatchData] = useState({
     matchState: "start",
     cards: JSON.parse(JSON.stringify(gameState.deck)), // Store list of cards, and their {loc} property
 
     scoreInHand: 0,
-    scoreToBeat: 5,
+    scoreToBeat: enemy.health,
 
     playsLeft: gameState.plays,
     discardsLeft: gameState.discards,
@@ -146,7 +147,7 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
       setAnimStep(14);
       await sleep(500);
 
-      gameState.currentLoc = "pickcard";
+      gameState.state = "pickcard";
       refreshGameState();
 
       return true;
@@ -204,6 +205,8 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
 
     refreshMatch();
 
+    setAnimStep(1);
+
     await sleep(500);
 
     for (var i = 0; i < matchData.handSize; i++) {
@@ -229,15 +232,16 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
 
   return (
     <div
-      className="w-full h-full overflow-hidden"
+      className="w-full h-full overflow-hidden bg-[#c4bbb3]"
       style={{
-        transition: BOUNCE_TRANSITION,
-        opacity: animStep == 14 ? "0" : "1",
+        transition: "all .3s linear",
+        opacity: animStep == 14 || animStep == 0 ? "0" : "1",
       }}
       onPointerMove={graspMove}
       onPointerUp={graspDrop}
       onPointerCancel={graspDrop}
     >
+      <BackDrop name="handbackdrop"></BackDrop>
       <CardHelp card={matchData.grasp} graspPos={graspPos}></CardHelp>
       <ViewDeck
         gameState={gameState}
@@ -281,7 +285,7 @@ const Match = ({ gameState, refreshGameState, addHitMarker }) => {
         )}
       </div>
 
-      <Enemy animStep={animStep} matchData={matchData}></Enemy>
+      <Enemy animStep={animStep} matchData={matchData} enemy={enemy}></Enemy>
 
       <div
         className="h-full absolute text-lg "

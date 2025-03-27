@@ -87,8 +87,6 @@ export const generateMap = () => {
           );
           var area2 = pickFromArrayWithProbabilites(areasFromPickedCat2);
 
-          console.log(area1);
-
           map.push({
             type: "choice",
             symbol: "choice",

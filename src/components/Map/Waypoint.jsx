@@ -23,14 +23,14 @@ const Waypoint = ({ mapInfo, mIndex, lookingAt, gameState }) => {
           style={{
             backgroundImage:
               "url(/enemies/" +
-              (gameState.pos >= mIndex ? mapInfo.enemy : "question_mark") +
+              (gameState.pos >= mIndex ? mapInfo.enemy.name : "question_mark") +
               ".svg)",
             transition: BOUNCE_TRANSITION,
             left:
               INNER_WIDTH / 2 -
               (DRAWING_SCALE * 320) / 2 +
               mIndex * MAP_VIEW_DOT_SPACING,
-            bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 100 : 60),
+            bottom: MAP_VIEW_DOT_BOTTOM_PADDING + (lookingAt ? 150 : 100),
             width: DRAWING_SCALE * 320 + "px",
             height: DRAWING_SCALE * 320 + "px",
             backgroundSize: "contain",

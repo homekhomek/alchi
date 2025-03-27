@@ -116,6 +116,33 @@ export var cards = [
   },
 ];
 
+export const shopOdds = [
+  {
+    common: 80,
+    uncommon: 20,
+    rare: 0,
+    legendary: 0,
+  },
+  {
+    common: 70,
+    uncommon: 25,
+    rare: 5,
+    legendary: 0,
+  },
+  {
+    common: 50,
+    uncommon: 35,
+    rare: 14,
+    legendary: 1,
+  },
+  {
+    common: 25,
+    uncommon: 40,
+    rare: 32,
+    legendary: 3,
+  },
+];
+
 export const areaTypes = [
   {
     name: "pickcard",

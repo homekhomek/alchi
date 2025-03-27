@@ -15,27 +15,29 @@ export const getCardRenderInfo = (
   closestGraspSpot,
   graspPos
 ) => {
+  var scale = 1;
+  var top = 0;
+  var left = 0;
+  var rotate = 0;
+  var z = 0;
+
   if (curCard.loc == "deck") {
     var deckIndex = matchData.deck.indexOf(curCard);
-    return {
-      scale: 0.6,
-      top: INNER_HEIGHT - CARD_HEIGHT - deckIndex * 2,
-      left:
-        matchData.discard.length > 0
-          ? INNER_WIDTH / 2 - CARD_WIDTH * 1.5
-          : INNER_WIDTH / 2 - CARD_WIDTH / 2,
-      rotate: 0,
-      z: deckIndex,
-    };
+    scale = 0.6;
+
+    top = INNER_HEIGHT - CARD_HEIGHT - deckIndex * 2;
+    left =
+      matchData.discard.length > 0
+        ? INNER_WIDTH / 2 - CARD_WIDTH * 1.5
+        : INNER_WIDTH / 2 - CARD_WIDTH / 2;
+    z = deckIndex;
   } else if (curCard.loc == "discard") {
     var discardIndex = matchData.discard.indexOf(curCard);
-    return {
-      scale: 0.6,
-      top: INNER_HEIGHT - CARD_HEIGHT - discardIndex * 2,
-      left: INNER_WIDTH / 2 + CARD_WIDTH * 0.5,
-      rotate: 0,
-      z: discardIndex + 30,
-    };
+
+    scale = 0.6;
+    top = INNER_HEIGHT - CARD_HEIGHT - discardIndex * 2;
+    left = INNER_WIDTH / 2 + CARD_WIDTH * 0.5;
+    z = discardIndex + 30;
   } else if (curCard.loc == "hand") {
     var handIndex = matchData.hand.indexOf(curCard);
     var totalCards = matchData.hand.length;
@@ -48,18 +50,16 @@ export const getCardRenderInfo = (
 
     var cardSeperation = HAND_WIDTH / (totalCards + 1);
 
-    return {
-      scale: 1,
-      left:
-        (handIndex + 1) * cardSeperation -
-        CARD_WIDTH / 2 -
-        HAND_WIDTH / 2 +
-        offsetIndex * 4 +
-        INNER_WIDTH / 2,
-      top: INNER_HEIGHT + HAND_OFFSET - yOffset,
-      rotate: offsetIndex * 2,
-      z: -handIndex + 10,
-    };
+    left =
+      (handIndex + 1) * cardSeperation -
+      CARD_WIDTH / 2 -
+      HAND_WIDTH / 2 +
+      offsetIndex * 4 +
+      INNER_WIDTH / 2;
+
+    top = INNER_HEIGHT + HAND_OFFSET - yOffset;
+    rotate = offsetIndex * 2;
+    z = -handIndex + 100;
   } else if (curCard.loc == "play") {
     var playIndex = matchData.play.indexOf(curCard);
     var totalCards = matchData.play.length;
@@ -88,10 +88,10 @@ export const getCardRenderInfo = (
     };
   }
   return {
-    scale: 1,
-    top: INNER_HEIGHT - CARD_HEIGHT,
-    left: INNER_WIDTH / 2 - CARD_WIDTH / 2,
-    rotate: 0,
-    z: 1,
+    scale: scale,
+    top: top,
+    left: left,
+    rotate: rotate,
+    z: z,
   };
 };

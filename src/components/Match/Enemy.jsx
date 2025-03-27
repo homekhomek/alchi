@@ -9,7 +9,7 @@ import {
   suits,
 } from "../../const";
 
-const Enemy = ({ animStep, matchData }) => {
+const Enemy = ({ animStep, matchData, enemy }) => {
   const [enemyShakeRot, setEnemyShakeRot] = useState(0);
   useEffect(() => {
     if (matchData.state != "damaging") return;
@@ -27,7 +27,7 @@ const Enemy = ({ animStep, matchData }) => {
     <div
       className="absolute"
       style={{
-        backgroundImage: "url(/enemies/rat_bishop.svg)",
+        backgroundImage: "url(/enemies/" + enemy.name + ".svg)",
         transition: BOUNCE_TRANSITION,
         left: INNER_WIDTH / 2 - 160 * DRAWING_SCALE * 1.5,
         top: INNER_HEIGHT + PLAY_OFFSET - DRAWING_SCALE * 580 + "px",
