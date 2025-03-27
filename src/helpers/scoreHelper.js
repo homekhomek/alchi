@@ -124,44 +124,43 @@ export const scoreCard = async (
     }
   };
 
-  const scoreCardMiddle = async (cardToScore, newCard = null) => {
+  const scoreCardMiddle = async (
+    cardToScore,
+    isReactivated = false,
+    newCard = null
+  ) => {
     var scoreInd = matchData.play.indexOf(cardToScore);
 
-    for (var j = 0; j < cardToScore.middle.length; j++) {
-      var scoreObj = cardToScore.middle[j];
-
-      // suit conditionals
-      if (suits.some((s) => s.name == scoreObj.conditional)) {
+    // Check first middle for conditional
+    var firstScoreObj = cardToScore.middle[0];
+    if (suits.some((s) => s.name == firstScoreObj.conditional)) {
+      for (var j = 0; j < cardToScore.middle.length; j++) {
+        var scoreObj = cardToScore.middle[j];
         for (var k = 0; k < currentPlay.length; k++) {
           if (
             currentPlay[k].suit == scoreObj.conditional &&
             currentPlay[k] != cardToScore &&
             (newCard == null || newCard == currentPlay[k])
           ) {
-            if (scoreObj.times == undefined || scoreObj.times > 0) {
-              var usingCard = currentPlay[k];
-              usingCard.scoring = true;
-              refreshMatch();
-              await sleep(250);
-              await doEffect(scoreObj, cardToScore);
+            var usingCard = currentPlay[k];
+            usingCard.scoring = true;
+            refreshMatch();
+            await sleep(250);
+            await doEffect(scoreObj, cardToScore);
 
-              if (scoreObj.times != undefined) {
-                scoreObj.times -= 1;
-                refreshMatch();
-              }
-
-              usingCard.scoring = false;
-              refreshMatch();
-            }
+            usingCard.scoring = false;
+            refreshMatch();
           }
         }
       }
-      // Other conditionals
-      if (
-        scoreObj.conditional == "first_card" &&
-        scoreInd == 0 &&
-        newCard == null
-      ) {
+    }
+    if (
+      firstScoreObj.conditional == "first_card" &&
+      scoreInd == 0 &&
+      newCard == null
+    ) {
+      for (var j = 0; j < cardToScore.middle.length; j++) {
+        var scoreObj = cardToScore.middle[j];
         await sleep(250);
         await doEffect(scoreObj, cardToScore);
       }
@@ -208,7 +207,7 @@ export const scoreCard = async (
   // Check middle
   if (cardToScore.middle) {
     cardToScore.scoring = true;
-    await scoreCardMiddle(cardToScore);
+    await scoreCardMiddle(cardToScore, isReactivated);
   }
 
   cardToScore.scoring = false;
@@ -242,7 +241,7 @@ export const scoreCard = async (
       await sleep(150);
       cardToCheck.scoring = true;
       refreshMatch();
-      await scoreCardMiddle(cardToCheck, cardToScore);
+      await scoreCardMiddle(cardToCheck, isReactivated, cardToScore);
       cardToCheck.scoring = false;
       refreshMatch();
     }

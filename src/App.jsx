@@ -5,6 +5,10 @@ import { generateMap } from "./helpers/helper";
 var startingDeckCardNames = [
   "seed",
   "leaf",
+  "leaf",
+  "leaf",
+  "leaf",
+  "leaf",
   "firefly",
   "ember",
   "watercan",

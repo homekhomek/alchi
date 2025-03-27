@@ -27,10 +27,12 @@ import ViewMap from "../components/ViewMap";
 import BackDrop from "../components/Backdrop";
 import { useHitMarkers } from "../contexts/HitMarkerContext";
 import SymbolText from "../components/SymbolText";
+import { useParticles } from "../contexts/ParticleContext";
 
 const playWidth = CARD_WIDTH * 4;
 const Match = ({ gameState, refreshGameState, enemy }) => {
   const { addHitMarker } = useHitMarkers();
+  const { addParticle } = useParticles();
   const [matchData, setMatchData] = useState({
     matchState: "start",
     cards: JSON.parse(JSON.stringify(gameState.deck)), // Store list of cards, and their {loc} property
@@ -223,6 +225,17 @@ const Match = ({ gameState, refreshGameState, enemy }) => {
 
   useEffect(() => {
     startMatch();
+
+    var particleTestInterval = setInterval(() => {
+      addParticle({
+        startPos: { x: 500, y: 500 },
+        endPos: { x: 700, y: 700 },
+        startRot: 0,
+        endRot: 360,
+        img: "/symbols/orange_dot",
+        size: 80,
+      });
+    }, 1000);
   }, []);
 
   /* RENDER METHODS */
@@ -271,7 +284,7 @@ const Match = ({ gameState, refreshGameState, enemy }) => {
         {Array.from({ length: 8 }, () => 0).map((c, i) => (
           <img
             key={i}
-            src={`/cards/suits/symbols/orange_dot.svg`}
+            src={`/symbols/orange_dot.svg`}
             className="inline-block mt-[-2px] ml-[3px] transition-all"
             style={{
               height: DRAWING_SCALE * 45 + "px",

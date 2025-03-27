@@ -29,7 +29,7 @@ export const getCardRenderInfo = (
     top = INNER_HEIGHT - CARD_HEIGHT - deckIndex * 2;
     left =
       matchData.discard.length > 0
-        ? INNER_WIDTH / 2 - CARD_WIDTH * 1.5
+        ? INNER_WIDTH / 2 - CARD_WIDTH * 1.15
         : INNER_WIDTH / 2 - CARD_WIDTH / 2;
     z = deckIndex;
   } else if (curCard.loc == "discard") {
@@ -37,7 +37,7 @@ export const getCardRenderInfo = (
 
     scale = 0.6;
     top = INNER_HEIGHT - CARD_HEIGHT - discardIndex * 2;
-    left = INNER_WIDTH / 2 + CARD_WIDTH * 0.5;
+    left = INNER_WIDTH / 2 + CARD_WIDTH * 0.15;
     z = discardIndex + 30;
   } else if (curCard.loc == "hand") {
     var handIndex = matchData.hand.indexOf(curCard);

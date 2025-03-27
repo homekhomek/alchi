@@ -203,6 +203,18 @@ export var cards = [
   //
 
   // RARE
+  {
+    name: "racoon",
+    suit: "water",
+    startingValue: 4,
+    rarity: "rare",
+    left: [{ suit: "electric" }],
+    right: [{ suit: "fire" }],
+    middle: [
+      { conditional: "card_played", type: "move_towards_played" },
+      { type: "reactivate" },
+    ],
+  },
 
   // LEGEND
 

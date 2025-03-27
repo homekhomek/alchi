@@ -107,12 +107,8 @@ const Card = ({
                 });
               } else if (m.type == "multiply_points") {
                 desc.push({
-                  type: "symbol",
-                  value: "x",
-                });
-                desc.push({
                   type: "text",
-                  value: m.value,
+                  value: "ˣ" + m.value,
                 });
               } else if (m.type == "draw_card") {
                 if (m.value > 1)
@@ -141,7 +137,7 @@ const Card = ({
                 >
                   <div>
                     <img
-                      src={`/cards/suits/symbols/${m.conditional}.svg`}
+                      src={`/symbols/${m.conditional}.svg`}
                       className="absolute "
                       style={{
                         left: DRAWING_SCALE * 27 + "px",
@@ -155,7 +151,7 @@ const Card = ({
                       if (d.type == "symbol") {
                         return (
                           <img
-                            src={`/cards/suits/symbols/${d.value}.svg`}
+                            src={`/symbols/${d.value}.svg`}
                             className="inline-block mt-[-2px]"
                             style={{
                               height: (CARD_HEIGHT / 360) * 45 + "px",

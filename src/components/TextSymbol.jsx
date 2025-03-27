@@ -9,7 +9,7 @@ const TextSymbol = ({
 }) => {
   return (
     <img
-      src={`/cards/suits/symbols/${symbol}.svg`}
+      src={`/symbols/${symbol}.svg`}
       className="inline-block"
       style={{
         height: DRAWING_SCALE * size + "px",
