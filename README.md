@@ -17,4 +17,5 @@ enemy data
 boss battles?
 redo the map button
 reactivation
+card move effects
 hover for cards

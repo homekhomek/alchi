@@ -8,8 +8,8 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
   const [cardFocus, setCardFocus] = useState(null);
 
   useEffect(() => {
-    setShow(false);
     if (!card) {
+      setShow(false);
       return;
     }
 
@@ -98,6 +98,7 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
                           msg={`for each [${so.conditional}]:`}
                           marginLeft={1}
                           marginRight={3}
+                          marginTop={0}
                         />
                       </div>
                     )}
@@ -109,13 +110,13 @@ const CardHelp = ({ card, graspPos, customDelay = 1500 }) => {
                       <div className="block mb-2 ">
                         {so.value > 0 ? "+" : ""}
                         {so.value}
-                        <TextSymbol symbol="sword" />
+                        <TextSymbol symbol="sword" marginTop={0} />
                       </div>
                     )}
                     {so.type == "multiply_points" && (
                       <div className="block mb-2 ">
                         x{so.value}
-                        <TextSymbol symbol="sword" />
+                        <TextSymbol symbol="sword" marginTop={0} />
                       </div>
                     )}
                     {so.type == "draw_card" && (
