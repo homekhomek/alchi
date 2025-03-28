@@ -21,10 +21,10 @@ var startingDeckCardNames = [
 ];
 
 var startingGameState = {
-  state: "starting",
+  state: "incrementmap",
   plays: 4,
   deck: startingDeckCardNames,
-  pos: 1,
+  pos: 0,
   map: generateMap(),
 };
 

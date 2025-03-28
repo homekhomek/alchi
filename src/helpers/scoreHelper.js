@@ -1,4 +1,5 @@
 import {
+  CARD_HEIGHT,
   CARD_WIDTH,
   DRAWING_SCALE,
   FULL_CARD_HEIGHT,
@@ -36,7 +37,7 @@ export const scoreCard = async (
       for (var i = 0; i < scoreObj.value; i++) await drawCard();
 
       return true;
-    } else if (scoreObj.type == "move_towards_played" && !isReactivated) {
+    } else if (scoreObj.type == "move_towards_played") {
       if (matchData.play.indexOf(newCard) < matchData.play.indexOf(cardToScore))
         return await moveCard(cardToScore, true);
       else return await moveCard(cardToScore, false);
@@ -64,7 +65,7 @@ export const scoreCard = async (
         opacityDuration: 50,
         opacityTime: 450,
         transition: ".5s ease",
-        opacityTransition: ".5s linear",
+        opacityTransition: ".3s linear",
         img: "/icons/reactivate",
         size: 180 * DRAWING_SCALE,
       });
@@ -90,6 +91,12 @@ export const scoreCard = async (
   };
 
   const moveCard = async (cardToMove, left = false) => {
+    var cardTransform = getCardRenderInfo(
+      cardToMove,
+      matchData,
+      null,
+      graspPos
+    );
     var playIndex = matchData.play.indexOf(cardToMove);
     if (
       matchData.play.length <= 1 ||
@@ -98,16 +105,53 @@ export const scoreCard = async (
     )
       return false;
 
-    if (left)
+    if (left) {
       [matchData.play[playIndex], matchData.play[playIndex - 1]] = [
         matchData.play[playIndex - 1],
         matchData.play[playIndex],
       ];
-    else
+      addParticle({
+        startPos: {
+          x: cardTransform.left + (CARD_WIDTH - 60 * DRAWING_SCALE) / 2,
+          y: cardTransform.top + (CARD_HEIGHT - 60 * DRAWING_SCALE) / 2,
+        },
+        endPos: {
+          x: cardTransform.left + (CARD_WIDTH - 60 * DRAWING_SCALE) / 2 - 15,
+          y: cardTransform.top + (CARD_HEIGHT - 60 * DRAWING_SCALE) / 2,
+        },
+        time: 1,
+        opacityDuration: 50,
+        opacityTime: 350,
+        transition: ".4s ease",
+        opacityTransition: ".2s linear",
+        img: "/symbols/move_left",
+        size: 80 * DRAWING_SCALE,
+      });
+    } else {
       [matchData.play[playIndex], matchData.play[playIndex + 1]] = [
         matchData.play[playIndex + 1],
         matchData.play[playIndex],
       ];
+      addParticle({
+        startPos: {
+          x: cardTransform.left + (CARD_WIDTH - 60 * DRAWING_SCALE) / 2,
+          y: cardTransform.top + (CARD_HEIGHT - 60 * DRAWING_SCALE) / 2,
+        },
+        endPos: {
+          x: cardTransform.left + (CARD_WIDTH - 60 * DRAWING_SCALE) / 2 + 15,
+          y: cardTransform.top + (CARD_HEIGHT - 60 * DRAWING_SCALE) / 2,
+        },
+        time: 1,
+        opacityDuration: 50,
+        opacityTime: 350,
+        transition: ".4s ease",
+        opacityTransition: ".2s linear",
+        img: "/symbols/move_right",
+        size: 60 * DRAWING_SCALE,
+      });
+    }
+
+    await sleep(200);
 
     refreshMatch();
 

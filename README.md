@@ -7,7 +7,7 @@ suit vibes:
 grass: support, draw, grow, don't refresh
 fire: damage, big bonuses, destroy cards
 electric: compound, multiplies, reactivates
-water: movement, defense (if thats a thing)
+water: movement
 dark: evil
 
 todo:
@@ -16,8 +16,11 @@ enemy dynamics start
 enemy data
 boss battles?
 redo the map button
-card move effects
 hover for cards
 shop params
 shop reroll
 card rarities
+shop upgrades
+destroy card
+trade card
+mix background

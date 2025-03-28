@@ -37,7 +37,7 @@ const Particle = ({ p }) => {
         height: typeof p.size == "object" ? p.size.height : p.size,
         backgroundImage: `url(${p.img}.svg)`,
         backgroundSize: "contain",
-        opacity: animate ? opacity : "0",
+        opacity: animate || !p.fadeIn ? opacity : "0",
       }}
     ></div>
   );

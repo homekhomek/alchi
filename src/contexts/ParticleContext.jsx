@@ -24,6 +24,7 @@ export const ParticleProvider = ({ children }) => {
     opacityTransition = ".25s linear",
     startRot = 0,
     endRot = 0,
+    fadeIn = true,
   }) => {
     const newParticle = {
       startPos: startPos,
@@ -39,6 +40,7 @@ export const ParticleProvider = ({ children }) => {
       opacityDuration: opacityDuration,
       transition: transition,
       opacityTransition: opacityTransition,
+      fadeIn: fadeIn,
     };
 
     setParticles((prevParticles) => {
