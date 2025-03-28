@@ -1,6 +1,7 @@
 import {
   CARD_WIDTH,
   DRAWING_SCALE,
+  FULL_CARD_HEIGHT,
   INNER_HEIGHT,
   INNER_WIDTH,
   PLAY_OFFSET,
@@ -17,6 +18,7 @@ export const scoreCard = async (
   addHitMarker,
   drawCard,
   checkWin,
+  addParticle,
   isReactivated = false
 ) => {
   // Conditional is met
@@ -39,6 +41,39 @@ export const scoreCard = async (
         return await moveCard(cardToScore, true);
       else return await moveCard(cardToScore, false);
     } else if (scoreObj.type == "reactivate" && !isReactivated) {
+      var cardTransform = getCardRenderInfo(
+        cardToScore,
+        matchData,
+        null,
+        graspPos
+      );
+      cardToScore.offsetY = FULL_CARD_HEIGHT / 2;
+      cardToScore.offsetScale = 0.1;
+      addParticle({
+        startPos: {
+          x: cardTransform.left + (CARD_WIDTH - 180 * DRAWING_SCALE) / 2,
+          y: cardTransform.top,
+        },
+        endPos: {
+          x: cardTransform.left + (CARD_WIDTH - 180 * DRAWING_SCALE) / 2,
+          y: cardTransform.top,
+        },
+        startRot: 0,
+        endRot: 360,
+        time: 500,
+        opacityDuration: 50,
+        opacityTime: 450,
+        transition: ".5s ease",
+        opacityTransition: ".5s linear",
+        img: "/icons/reactivate",
+        size: 180 * DRAWING_SCALE,
+      });
+      refreshMatch();
+      await sleep(750);
+      cardToScore.offsetY = 0;
+      cardToScore.offsetScale = 0;
+      refreshMatch();
+
       await scoreCard(
         matchData.play.indexOf(cardToScore),
         matchData,
@@ -47,6 +82,7 @@ export const scoreCard = async (
         addHitMarker,
         drawCard,
         checkWin,
+        addParticle,
         true
       );
       return true;

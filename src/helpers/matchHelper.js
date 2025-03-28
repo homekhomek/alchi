@@ -60,7 +60,7 @@ export const getCardRenderInfo = (
 
     top = INNER_HEIGHT + HAND_OFFSET - yOffset;
     rotate = offsetIndex * 2;
-    z = -handIndex + 100;
+    z = -handIndex + 40;
   } else if (curCard.loc == "play") {
     var playIndex = matchData.play.indexOf(curCard);
     var totalCards = matchData.play.length;

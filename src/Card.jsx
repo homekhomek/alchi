@@ -56,12 +56,14 @@ const Card = ({
       style={{
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`,
-        top: `${top}px`,
+        top: `${top + (cardData.offsetY ? cardData.offsetY : 0)}px`,
         left: `${left}px`,
         zIndex: z,
         transform: sway
           ? ``
-          : `rotate(${rotate + shakeRot}deg) scale(${trueScale})`,
+          : `rotate(${rotate + shakeRot}deg) scale(${
+              trueScale + (cardData.offsetScale ? cardData.offsetScale : 0)
+            })`,
         transition: transString,
         opacity: opacity,
       }}
@@ -92,79 +94,107 @@ const Card = ({
             }}
           ></div>
           {cardData.middle &&
-            cardData.middle.map((m) => {
-              var background = "neutral";
+            cardData.middle.map((m, mIndex) => {
+              if (mIndex == 0) {
+                var background = "neutral";
 
-              if (suits.some((s) => s.name == m.conditional)) {
-                background = m.conditional;
-              }
-              var desc = [];
+                if (suits.some((s) => s.name == m.conditional)) {
+                  background = m.conditional;
+                }
+                var desc = [];
+                cardData.middle.forEach((md, mdIndex) => {
+                  if (mdIndex > 0)
+                    desc.push({
+                      type: "text",
+                      value: "",
+                    });
+                  if (md.type == "add_points") {
+                    desc.push({
+                      type: "text",
+                      value: md.value >= 0 ? "+" + md.value : md.value,
+                    });
+                  } else if (md.type == "multiply_points") {
+                    desc.push({
+                      type: "text",
+                      value: "ˣ" + md.value,
+                    });
+                  } else if (md.type == "draw_card") {
+                    if (md.value > 1)
+                      desc.push({
+                        type: "text",
+                        value: md.value,
+                      });
 
-              if (m.type == "add_points") {
-                desc.push({
-                  type: "text",
-                  value: m.value >= 0 ? "+" + m.value : m.value,
+                    desc.push({
+                      type: "symbol",
+                      value: "card_plus",
+                    });
+                  } else if (md.type == "move_towards_played") {
+                    desc.push({
+                      type: "symbol",
+                      value: "move_toward_played_card",
+                    });
+                  } else if (md.type == "reactivate") {
+                    desc.push({
+                      type: "symbol",
+                      value: "reactivate",
+                    });
+                  }
                 });
-              } else if (m.type == "multiply_points") {
-                desc.push({
-                  type: "text",
-                  value: "ˣ" + m.value,
-                });
-              } else if (m.type == "draw_card") {
-                if (m.value > 1)
-                  desc.push({
-                    type: "text",
-                    value: m.value,
-                  });
 
-                desc.push({
-                  type: "symbol",
-                  value: "card_plus",
-                });
-              }
-
-              return (
-                <div
-                  className="absolute "
-                  style={{
-                    left: -CARD_WIDTH_PADDING + "px",
-                    top: -CARD_HEIGHT_PADDING + "px",
-                    width: (CARD_WIDTH / 240) * 260,
-                    height: (CARD_HEIGHT / 360) * 380,
-                    backgroundImage: `url(/cards/suits/${background}_effect.svg)`,
-                    backgroundSize: "contain",
-                  }}
-                >
-                  <div>
-                    <img
-                      src={`/symbols/${m.conditional}.svg`}
-                      className="absolute "
-                      style={{
-                        left: DRAWING_SCALE * 27 + "px",
-                        bottom: DRAWING_SCALE * 27 + "px",
-                        height: (CARD_HEIGHT / 360) * 45 + "px",
-                      }}
-                    ></img>
+                return (
+                  <div
+                    className="absolute "
+                    style={{
+                      left: -CARD_WIDTH_PADDING + "px",
+                      top: -CARD_HEIGHT_PADDING + "px",
+                      width: (CARD_WIDTH / 240) * 260,
+                      height: (CARD_HEIGHT / 360) * 380,
+                      backgroundImage: `url(/cards/suits/${background}_effect.svg)`,
+                      backgroundSize: "contain",
+                    }}
+                  >
+                    <div>
+                      <img
+                        src={`/symbols/${m.conditional}.svg`}
+                        className="absolute "
+                        style={{
+                          left: DRAWING_SCALE * 47 + "px",
+                          bottom: DRAWING_SCALE * 26 + "px",
+                          height: (CARD_HEIGHT / 360) * 45 + "px",
+                          transform: "translateX(-50%)",
+                        }}
+                      ></img>
+                      <img
+                        src={`/symbols/activate_line.svg`}
+                        className="absolute "
+                        style={{
+                          left: DRAWING_SCALE * 75 + "px",
+                          bottom: DRAWING_SCALE * 26 + "px",
+                          height: DRAWING_SCALE * 45 + "px",
+                        }}
+                      ></img>
+                    </div>
+                    <div className="w-4/5 absolute bottom-0 right-0 h-[25px] text-center pt-[4px]">
+                      {desc.map((d) => {
+                        if (d.type == "symbol") {
+                          return (
+                            <img
+                              src={`/symbols/${d.value}.svg`}
+                              className="inline-block mt-[-2px]"
+                              style={{
+                                height: (CARD_HEIGHT / 360) * 45 + "px",
+                              }}
+                            ></img>
+                          );
+                        } else {
+                          return d.value;
+                        }
+                      })}
+                    </div>
                   </div>
-                  <div className="w-full absolute bottom-0 h-[25px] text-center pt-[4px]">
-                    {desc.map((d) => {
-                      if (d.type == "symbol") {
-                        return (
-                          <img
-                            src={`/symbols/${d.value}.svg`}
-                            className="inline-block mt-[-2px]"
-                            style={{
-                              height: (CARD_HEIGHT / 360) * 45 + "px",
-                            }}
-                          ></img>
-                        );
-                      } else {
-                        return d.value;
-                      }
-                    })}
-                  </div>
-                </div>
-              );
+                );
+              }
             })}
           {cardData.left &&
             cardData.left.map((l) => (

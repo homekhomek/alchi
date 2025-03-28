@@ -18,15 +18,12 @@ import Card from "../Card";
 import { getCardRenderInfo } from "../helpers/matchHelper";
 import { scoreCard } from "../helpers/scoreHelper";
 import CardHelp from "../components/CardHelp";
-import TextSymbol from "../components/TextSymbol";
 import Enemy from "../components/Match/Enemy";
-import { getClosestDropPoint } from "../helpers/graspHelper";
 import ViewDeck from "../components/ViewDeck";
 import useGrasp from "../hooks/useGrasp";
 import ViewMap from "../components/ViewMap";
 import BackDrop from "../components/Backdrop";
 import { useHitMarkers } from "../contexts/HitMarkerContext";
-import SymbolText from "../components/SymbolText";
 import { useParticles } from "../contexts/ParticleContext";
 
 const playWidth = CARD_WIDTH * 4;
@@ -124,7 +121,8 @@ const Match = ({ gameState, refreshGameState, enemy }) => {
         graspPos,
         addHitMarker,
         drawCard,
-        checkWin
+        checkWin,
+        addParticle
       );
     }
     refreshMatch();
